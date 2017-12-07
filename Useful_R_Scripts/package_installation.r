@@ -3,7 +3,7 @@
 ## Date: 16 Sept 2016
 ## Description:
 ##	 This script installs commonly used packages for natural resource research and monitoring work. It was intended to be run
-##   once when you have a new install of R on your machine.
+##   once when you have a new install of R on your machine. 
 
 ###############################################
 ### COMMONLY USED PACKAGES IN AIM R SCRIPTS ###
@@ -24,7 +24,7 @@ install.packages(
   c(
     "dplyr", ## Notably useful for data frame manipulation with group_by(), summarize(), and mutate() and the piping operator %>%. Do you have a moment to hear the good news of our savior, piping?
     "tidyr", ## Lots of useful things, but specifically gather() and spread() for converting wide data frames into long ones and vice versa
-    "broom", ## Get stats objects into tidy data frames. Not as common
+    "broom", ## Get stats objects into tidy data frames. Not as common, but can be very useful
     "stringr", ## All about character strings. Great for str_split() in particular, but the whole str_ family of functions are A+
     "RODBC", ## Allows R to pass SQL queries to Access databases and pull out the results
     "XLSX" ## Read in modern Excel workbooks and spreadsheets
