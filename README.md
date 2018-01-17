@@ -14,3 +14,16 @@ The good folks at RStudio have produced a set of extremely helpful cheatsheets f
 * [Data Visualization with ggplot Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf)
 * [Working with Strings Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/strings.pdf)
 * [Apply Functions Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/purrr.pdf)
+
+
+## Additional Useful References & Resources
+The internet is awash in helpful material for data science, but sometimes it can be hard to know how to find it or even what questions you want to ask. This is a non-comprehensive list of resources for various tricks, tips, and skills to make life as a data scientist easier.
+### Git and GitHub
+* [GitHub's Guides to GitHub](https://guides.github.com/)
+* [Git Integration in RStudio (DataCamp)](https://www.datacamp.com/courses/working-with-the-rstudio-ide-part-2)
+* [Seven Rules for Great Git Commit Messages](https://chris.beams.io/posts/git-commit/)
+### Regular Expressions
+* [RegexOne: Interactive Introduction to Regular Expressions](https://regexone.com/)
+* [Regex Crossword Puzzles](https://regexcrossword.com/)
+### Testing Code
+* [Using testthat for Futomated Testing in R Development](http://r-pkgs.had.co.nz/tests.html)
