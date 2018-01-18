@@ -59,7 +59,7 @@ Unordered lists are made by using an asterisk, plus, or minus sign at the beginn
 Make links by using brackets and parentheses
 [Link text](https://www.github.com)
 Or just simply
-[https://www/github.com]
+(https://www/github.com)
 You can also use angle brackets for links
 <https://www.github.com>
 ```
@@ -68,7 +68,7 @@ Make links by using brackets and parentheses -
 [Link text](https://www.github.com).
 
 Or just simply
-[https://www/github.com].
+(https://www/github.com).
 
 You can also use angle brackets for links
 <https://www.github.com>
