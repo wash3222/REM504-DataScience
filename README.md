@@ -26,4 +26,4 @@ The internet is awash in helpful material for data science, but sometimes it can
 * [RegexOne: Interactive Introduction to Regular Expressions](https://regexone.com/)
 * [Regex Crossword Puzzles](https://regexcrossword.com/)
 ### Testing Code
-* [Using testthat for Futomated Testing in R Development](http://r-pkgs.had.co.nz/tests.html)
+* [Using testthat for Automated Testing in R Development](http://r-pkgs.had.co.nz/tests.html)
