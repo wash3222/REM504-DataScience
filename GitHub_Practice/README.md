@@ -43,7 +43,7 @@ Ordered lists are made by giving a number at the beginning of the line
 2. Second list item
 Unordered lists are made by using an asterisk, plus, or minus sign at the beginning of the line
 * First unordered list item
-	+ Indent list items by adding spaces before the list symbol
+	+ Indent list items by adding a tab before the list symbol
 * Remove the spaces to unindent the list item
 ``` 
 Ordered lists are made by giving a number at the beginning of the line
@@ -51,7 +51,7 @@ Ordered lists are made by giving a number at the beginning of the line
 2. Second list item
 Unordered lists are made by using an asterisk, plus, or minus sign at the beginning of the line
 * First unordered list item
-	+ Indent list items by adding spaces before the list symbol
+	+ Indent list items by adding a tab before the list symbol
 * Remove the spaces to unindent the list item
 
 ### Links
@@ -63,10 +63,13 @@ Or just simply
 You can also use angle brackets for links
 <https://www.github.com>
 ```
-Make links by using brackets and parentheses
-[Link text](https://www.github.com)
+Make links by using brackets and parentheses - 
+
+[Link text](https://www.github.com).
+
 Or just simply
-[https://www/github.com]
+[https://www/github.com].
+
 You can also use angle brackets for links
 <https://www.github.com>
 
