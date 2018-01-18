@@ -1,8 +1,9 @@
 ### Alex Traynor
 #First .md for practice GitHub
 __Hi__!
-[Link] (https:\\google.com)
+
+[Link] (https://www.github.com)
 
 #Favourite Colours
--Blue
--Green
+1. Blue
+2. Green
