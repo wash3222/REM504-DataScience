@@ -16,7 +16,7 @@ Sometimes in R you will have objects and you don't know what type they are. Two 
 [1] "character"
 ```
 
-Another helpful set of functions for working with objects are the is.* functions. These are simple logical tests for different types of objects. For example,
+Another helpful set of functions for working with objects are the __is.*__ functions. These are simple logical tests for different types of objects. For example,
 ```
 > string <- "abcdefg"
 > is.vector(string)
@@ -36,7 +36,7 @@ Finally, the __summary()__ function is useful for getting summaries and some add
    1.00    2.25    3.50    3.50    4.75    6.00
    > d.frame <- data.frame("x"=c(1,2,3,4,5,6),y=c("a","b","b","a","a","a"))
 > summary(d.frame)
-          x        y
+            x      y
     Min.   :1.00   a:4
     1st Qu.:2.25   b:2
     Median :3.50
@@ -50,15 +50,32 @@ The basic data type in R is a __Vector__. A vector can be a single value or char
 
 ### Numeric
 Numeric vectors are, obviously, numbers, and they can be either integers or double-precision decimal values.
+```
+> x<-1
+> class(x)
+[1] "numeric"
+```
 
 ### Character
 Any alphanumeric character can be a character vector. Character vectors are created using quotation marks around the character string. When you import data, if the column has any non-numeric characters in it, it is brought in as a character vector.
+```
+> y <- "a"
+> class(y)
+[1] "character"
+```
 
 ### Logical
 Logical vectors are either TRUE or FALSE. These also equate to 1 or 0.
+```
+> test <- 5==5 # simple test, note evaluation operator (==)
+> test
+[1] TRUE
+class(test)
+[1] "logical"
+```
 
 ### Creating vectors
-You create vectors by simple assignment in R
+You create vectors by simple assignment in R.
 ```
 x <- 1
 myOffice <- "205D"
@@ -68,20 +85,40 @@ You can also combine single-value vectors into longer vectors using the __c()__ 
 x <- c(1,2,3,4)
 y <- c("a","b","c","d")
 ```
-Note that vectors must contain values from the same data type. So, this wouldn't work in R
+Note that vectors must contain values from the same data type. So, this wouldn't work in R:
 ```
 x <- c(1,2,"a","b")  # Will throw an error because you're mixing data types in a vector.
 ```
 
 ### Matrices
-A matrix in R is simply a 2-dimensional vector. You can think of it as an Excel spreadsheet that has no column or row headings.
+A matrix in R is simply a 2-dimensional vector. You can think of it as an Excel spreadsheet that has no column or row headings. There are many ways to create a matrix. In my experience, I don't often use matrices unless an analysis function I'm using requires it.
+```
+> mat <- matrix(c(1,2,3, 6,7,8),nrow=2,ncol=3)
+> mat
+     [,1] [,2] [,3]
+[1,]    1    3    7
+[2,]    2    6    8
+```
 
 ## Data Frames
-You can generally thing of a data frame in R as a table. It looks like a matrix, but it can have different data types (numeric, character, logical) in it. Data frames also can have named columns and rows which make it easy to do queries and filters to subset your data. Often when you import tabular data, it will come in as a data frame. Data frames are one of the most common types of R objects you'll use for analysis.
+You can generally thing of a data frame in R as a table. It looks like a matrix, but it can have different data types (numeric, character, logical) in it. Data frames also can have named columns and rows which make it easy to do queries and filters to subset your data. Data frames are one of the most common types of R objects you'll use for analysis.
+
+Often when you import tabular data, it will come in as a data frame.
 ```
 > my.data <- read.csv("C:\\Users\\Jason\\Documents\\fake_data.csv", header=TRUE)
 > class(my.data)
 [1] "data.frame"
+```
+
+You can also create data frames by hand:
+```
+> my.df <- data.frame(temp.C=c(23,32,17,22),growth=c(123,231,111,99))
+> my.df
+  temp.C growth
+1     23    123
+2     32    231
+3     17    111
+4     22     99
 ```
 
 ## Lists
