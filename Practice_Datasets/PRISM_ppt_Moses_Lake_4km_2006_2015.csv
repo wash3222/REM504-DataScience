@@ -1,0 +1,21 @@
+PRISM Time Series Data
+Location:  Lat: 47.1636   Lon: -119.4366   Elev: 1132ft
+Climate variable: ppt
+Spatial resolution: 4km
+Period: 2006 - 2015
+Dataset: AN81m
+PRISM day definition: 24 hours ending at 1200 UTC on the day shown
+Grid Cell Interpolation: Off
+Time series generated: 2017-Oct-19
+Details: http://www.prism.oregonstate.edu/documents/PRISM_datasets.pdf
+Date,ppt (inches)
+2006,9.94
+2007,5.64
+2008,3.11
+2009,5.74
+2010,11.38
+2011,5.20
+2012,10.70
+2013,6.46
+2014,7.09
+2015,7.91
