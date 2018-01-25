@@ -25,6 +25,11 @@ summary(rapideye.data)
 rapideye.data <- read.csv(RapidEye.file, header = TRUE, stringsAsFactors = FALSE)
 summary(rapideye.data)
 
+# Use read.table instead - does the same thing as read.csv, but need to 
+# specify the separator and fill option for missing values.
+# Useful if you have data that uses tabs or some other delimiter.
+rapideye.data <- read.table(RapidEye.file, sep=",", header = TRUE, stringsAsFactors = FALSE, fill = TRUE)
+
 
 # Import CSV data where you need to skip some header lines
 prism.data <- read.csv(PRISM.file, header = TRUE, skip = 10)
