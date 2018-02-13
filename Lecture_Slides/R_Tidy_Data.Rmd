@@ -13,6 +13,7 @@ Below are some code examples for tidying a real-world, messy dataset.
 
 ### 1. Import and explore the messy data
 ```{r echo=TRUE}
+# Load libraries
 library(tidyverse)
 library(readxl)
 
@@ -29,7 +30,7 @@ glimpse(messy.data) #useful dplyr function for getting a bunch of info on a data
 Things like hard returns (e.g., "\r\n"), tabs (e.g., "\t"), spaces, or other strange characters can cause you problems down the road. It's best to have simple alphanumeric variable names in R unless you specifically need to do something more complicated (e.g., sometimes you need to build returns, etc. into column names for correct axes, legends, labels in ggplot graphics).
 
 You can fix the column names with the names function (*NOTE: functions like names() in R can be both read or write*)
-```{r, echo=TRUE}
+```{r echo=TRUE}
 names(messy.data) <- c("PlotNum","grz-Plant","grz-Seedhead","ungrz-Plant","ungrz-Seedhead")
 glimpse(messy.data)
 ```

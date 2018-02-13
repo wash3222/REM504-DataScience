@@ -1,0 +1,101 @@
+---
+title: "REM 504 - More Tidy Data Concepts!"
+output: html_notebook
+---
+
+This Notebook continues our discussion on Tidy Data in R. Last time we looked at reformatting messy datasets into tidy datasets using the gather and separate functions from dplyr. Those are powerful by themselves for structuring flexibile datasets, but in many cases we need some additionla functions to subset our datasets.
+
+Subsetting in R can be done by observations (rows) or variables (columns). While the dplyr package has a nice set of tools for subsetting datasets, you can also do these operations using only base R functions. Why wouldn't we want to just use the dplyr functions if they're well documented and have a cool cheatsheet with illustsrations? Well, using a third-party package creates dependencies, and dependencies need to be maintained. So in a few years when you want to dust off your code, you'll need to make sure that the new version of dplyr still does what the current version does. General rule of thumb is to avoid creating dependencies when you don't asbolutely need them.
+
+```{r setup}
+# Load libraries
+library(dplyr)
+
+# Load our data
+path <- "C:/Users/Jason Karl/Documents/GitHub/REM504-DataScience/Practice_Datasets"
+datacsv <- "tidy_YST_data.csv"
+tidy.data <- read.csv(paste(path,datacsv,sep="/"),header = TRUE, stringsAsFactors = FALSE)
+names(tidy.data)
+```
+
+## R bracket notation - eat, sleep, breathe the brackets!
+R has a special notation for subsetting vectors, matrices, arrays, lists and data frames that uses square brackets (i.e., [ ]). The basic idea here is that you can put brackets behind a vector or data frame object to subset the object. Your subsets can result in single values or ranges of values.
+
+The best way to learn bracket notation is to play around with it.
+
+```{r bracketDemo, echo=TRUE}
+# A data frame has rows and columns, so you have two positions to specify in the square brackets
+# Grab the first row from our tidy data
+tidy.data[1,] # Note the comma. That separates the rows from the columns.
+
+# Now grab just the third column
+tidy.data[,3]
+
+# How about the value from the 3rd column and the first row?
+tidy.data[,]
+
+## You can use bracket notation to grab a set of rows or columns with sequences
+subset.rows <- tidy.data[1:10,] # Grab the first 10 rows
+subset.cols <- tidy.data[,3:5] # grab columns 3-5
+
+# Use a list to make irregular selections
+subset.rows <- tidy.data[c(1,3,5,7,9,11),] # Grab rows 1, 3, 5, 7, 9, 11
+
+```
+
+### Selecting columns by name with the $ notation
+Data frames are a special form of a list object in R, and as such, the columns in a data frame can be given names (this happens automatically when you import a dataset with a header row). You can use the names to select subsets by using the $ operator.
+
+```{r dollarNotation, echo=TRUE}
+# Select the treatment column from the tidy dataset
+tidy.data$treatment
+
+# Select multiple columns by name
+tidy.data[,c("treatment","indicator","density")]
+
+# Combine name selections with bracket notation
+tidy.data$treatment[1:10] # no comma needed because tidy.data$treatment is a vector
+
+```
+
+
+### Use bracket notation for subsetting with logical expressions
+The real power of bracket notation is that you can use it to create subsets based on logical evaluations of your data.
+
+```{r bracketSubsets, echo=TRUE}
+# Consider this logical evaluation
+tidy.data$treatment=="grz"
+
+# The output of this is a vector of TRUEs and FALSEs that correspond to which rows in the tidy.data dataframe that meet our criterion. If we plop that logical expression into a set of brackets, we can use it select just the rows that meet that condition.
+grz.data <- tidy.data[tidy.data$treatment=="grz",] # note 1) you have to replicate the whole logical expression, and 2) the comma signifies that we're using this to select rows.
+glimpse(grz.data)
+
+## You can also stack selections together for subsets
+grz.plant.data <- tidy.data[tidy.data$treatment=="grz" & tidy.data$indicator=="Plant",]
+glimpse(grz.plant.data)
+```
+
+## Resources on bracket notation
+I can't stress enough how important it is to really understand bracket notation in R. It shows up everywhere because everything in R is an object of some kind that you can index and slice apart using bracket notation. The following websites have some useful info on bracket notation and named lists.
+- [https://rpubs.com/tomhopper/brackets](Learning Data Science with R: subsetting, extracting, and bracket notation)
+- [https://www.r-bloggers.com/r-accessors-explained/](R Accessors Explained)
+
+
+## Subsetting with dplyr functions
+Now that I just made a big deal about the importance of using base functions and bracket notation for subsetting datasets. Let's look at some useful functions in dplyr for doing the same thing: __filter__ and __select__.
+```{r filterSelect, echo=TRUE}
+# Use filter to subset rows from a dataset
+grz.plant.data <- filter(tidy.data, treatment=="grz" & indicator=="Plant") # Regular form
+
+grz.plant.data <- tidy.data %>% filter(treatment=="grz" & indicator=="Plant") # Piped form
+
+# Use select to subset columns from a dataset
+col.subset <- select(tidy.data, treatment, indicator, density) # Regular form
+
+col.subset <- tidy.data %>% select(treatment, indicator, density) # piped form
+
+# Use pipe form to chain subset and select together
+row.col.subset <- tidy.data %>% filter(treatment=="grz" & indicator=="Plant") %>% select(treatment, indicator, density)
+
+```
+
