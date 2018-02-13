@@ -2,9 +2,9 @@
 R isn't going to be much use to you if you can't get data into and out of it. Luckily, R has some pretty easy and powerful import/export functions.
 
 ### Packages for data import/export
-R can handle a number of data formats right out of the box, but if you want to do things like read Excel workbooks, Access databases, or SAS tables, you'll need to install and load some packages. We'll be using the following packages, so you'll want to go ahead and install them:
-- readxl - simple, cross platform package for reading Excel files
-- readr - offers some additional functionality, types for data import
+R can handle a number of data formats right out of the box (try to keep methods simple and easy for others to access), but if you want to do things like read Excel workbooks, Access databases, or SAS tables, you'll need to install and load some packages. We'll be using the following packages, so you'll want to go ahead and install them:
+- readxl - simple, cross platform package for reading Excel files - very hard to write back to excel however
+- readr - offers some additional functionality, types for data import - part of tidyverse
 - RODBC (for Windows users only. Mac and Linux, check out mdbtools) - Read Microsoft Access database tables.
 
 ## Factors

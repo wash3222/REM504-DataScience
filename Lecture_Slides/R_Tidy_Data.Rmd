@@ -1,6 +1,8 @@
 ---
 title: "REM 504 - Practicing Tidy Data"
-output: html_notebook
+output:
+  pdf_document: default
+  html_notebook: default
 ---
 
 This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook that we can use to explore some Tidy Data concepts (I may regret trying to introduce another new thing at the same time as tidy data, but it's a calculated risk). 
@@ -64,7 +66,7 @@ ggplot(data=tidier.data,aes(x=treatment,y=density))+geom_boxplot()+facet_grid(~i
 
 
 ## Extra: Power of the Pipe!
-Besides being the secret handshake of the tidyverse, pipes actually have a really cool use in streamlining your code. In the example above, we needed to take two steps to tidy our data, gathering the columns and then separating out the treatment and indicator labels. This required making an intermediate/temporary data object. With pipes, we can smash all that operation into a single (albeit long) statement.
+Besides being the secret handshake of the tidyverse, pipes actually have a really cool use in streamlining your code. In the example above, we needed to take two steps to tidy our data, gathering the columns and then separating out the treatment and indicator labels. This required making an intermediate/temporary data object. With pipes, we can smash all that operation into a single (albeit long) statement. Piping can however fail spectacularly and requires dplyr package, when otherwsie might not be useful. 
 
 ```{r echo=TRUE}
 one.shot.tidiest.data <- messy.data %>% gather(key="treatXindicator",value="density","grz-Plant","grz-Seedhead","ungrz-Plant","ungrz-Seedhead") %>% separate(treatXindicator, into=c("treatment","indicator"), sep="-") # piped form
