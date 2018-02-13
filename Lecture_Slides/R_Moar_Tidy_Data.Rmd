@@ -99,3 +99,38 @@ row.col.subset <- tidy.data %>% filter(treatment=="grz" & indicator=="Plant") %>
 
 ```
 
+## Grouping and Summarizing data with dplyr
+One common task for data prep is creating summaries (by group) - think pivot tables in Excel (Now stop thinking of pivot tables because they suck). Summaries in R are really powerful because they're very flexible. The down side of that is their flexibility also makes them somewhat tricky to wrap your head around at first. Once you get the hang of summaries, then you can start grouping your data in different ways to create your summaries by group.
+```{r summariseExample, echo=TRUE}
+## Create a summary that is the mean of the YST plant density
+dens.data <- tidy.data[tidy.data$indicator=="Plant",] # Get the Plant density data first
+dens.data %>% summarise(mean=mean(density))
+
+## Get the mean density, standard deviation, and count
+dens.summary <- dens.data %>% summarise(mean=mean(density),se=sd(density),n=n())
+dens.summary
+
+## Now let's do that summary by treatment type using the group_by function
+dens.by.treat <- dens.data %>% group_by(treatment) %>% summarise(mean=mean(density),se=sd(density),n=n())
+dens.by.treat
+```
+
+## Creating new variables
+The last of the common data manipulation tasks to discuss is how to create new variables in your datasets. Like everything else in R, there are many different ways to do this. The easiest, to me, are to do it by assignment or using dplyr::mutate.
+
+```{r createVar, echo=TRUE}
+## You can create a new variable in a dataframe simply by declaring it on the left side of the assignment operator.
+tidy.data$logDens <- log(tidy.data$density) # Don't know why we would do this, but let's just run with it.
+glimpse(tidy.data)
+
+## You can also use mutate to create new variables
+tidy.data <- tidy.data %>% mutate(log2=log(density))
+
+## mutate is also handy for dropping variables
+tidy.data <- tidy.data %>% mutate(log2=NULL)
+
+## Otherwise, you can drop variables using bracket notation!
+tidy.data <- tidy.data[,names(tidy.data)!="logDens"]
+
+```
+
