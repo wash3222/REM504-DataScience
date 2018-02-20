@@ -1,6 +1,3 @@
-#clear current lists 
-rm(list = ls())
-
 # Load libraries
 library(dplyr)
 library(tidyverse)
@@ -15,8 +12,6 @@ glimpse(XSpebble.data)
 #keep only wanted columns
 XSpebble.data <- XSpebble.data[,10:19]
 
-glimpse(XSpebble.data)
-
 #delete blank cells
 XSpebble.data[XSpebble.data==""] <- NA
 XSpebble.data <- XSpebble.data %>% drop_na()
@@ -29,7 +24,7 @@ XSpebble.tidier <- separate(XSpebble.tidy, CrossSection, into=c("XS","XSNumber")
 XSpebble.tidier <- separate(XSpebble.tidier, GrainSize, into=c("Lowerrange","GSmm_Finer_than"), sep=" - ")
 
 #Delete mm at end of grainsize value
-XSpebble.tidier$Finer_than_mm = as.numeric(gsub("\\mm", "",XSpebble.tidier$Finer_than_mm))
+XSpebble.tidier$GSmm_Finer_than = as.numeric(gsub("\\mm", "",XSpebble.tidier$GSmm_Finer_than))
 
 #Keep only wanted columns
 XSpebble.tidiest <- subset(XSpebble.tidier, select = -c(XS, Lowerrange))
