@@ -82,5 +82,7 @@ mydata_AFDM_long$AFDM = ((as.numeric(mydata_AFDM_long$DryMass) - as.numeric(myda
 
 
 ```{r, echo=F}
-ggplot(mydata_AFDM_long, aes(x=TreatmentB, y=AFDM, fill=TreatmentA))+geom_boxplot()
+ggplot(mydata_AFDM_long, aes(x=TreatmentB, y=AFDM, fill=TreatmentA))+geom_boxplot()+
+  scale_fill_grey()+
+  labs(x=NULL, y="AFDM (mg/cm^2)")+theme_cowplot()+theme(legend.title=element_blank())
 ```
