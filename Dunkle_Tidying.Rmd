@@ -31,7 +31,7 @@ mydata_AFDM
 
 ```{r, echo=F, message=F, warning = F}
 mydata_filtermass = mydata[2:47, 13:15]
-colnames(mydata_filtermass) = c("RefNum","Mass","FilterSize")
+colnames(mydata_filtermass) = c("FilterNo","FilterMass","FilterSize")
 mydata_filtermass
 ```
 
@@ -72,5 +72,15 @@ mydata_AFDM_light = mydata_AFDM [1:18, c(1, 4:5)]
 mydata_AFDM_light$TreatmentA = rep("Light", times = 18)
 colnames(mydata_AFDM_light) = c("Tank","DryMass","AshedMass","TreatmentA")
 mydata_AFDM_long = rbind(mydata_AFDM_dark, mydata_AFDM_light)
-mydata_AFDM_long$TreatmentB = 
+mydata_AFDM_long$TreatmentB = rep(TreatmentB, times = 2)
+mydata_AFDM_long
+usedfilters_mass = subset(mydata_filtermass, FilterNo == c(1:36))
+mydata_AFDM_long = cbind(mydata_AFDM_long, usedfilters_mass)
+
+mydata_AFDM_long$AFDM = ((as.numeric(mydata_AFDM_long$DryMass) - as.numeric(mydata_AFDM_long$FilterMass))-(as.numeric(mydata_AFDM_long$AshedMass) - as.numeric(mydata_AFDM_long$FilterMass)))/51.613
+```
+
+
+```{r, echo=F}
+ggplot(mydata_AFDM_long, aes(x=TreatmentB, y=AFDM, fill=TreatmentA))+geom_boxplot()
 ```
