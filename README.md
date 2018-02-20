@@ -20,6 +20,7 @@ The good folks at RStudio have produced a set of extremely helpful cheatsheets f
 The internet is awash in helpful material for data science, but sometimes it can be hard to know how to find it or even what questions you want to ask. This is a non-comprehensive list of resources for various tricks, tips, and skills to make life as a data scientist easier.
 ### R
 * [R Data Structures For Excel Users](http://rex-analytics.com/r-for-excel-users/)
+* [An Approach to Working in RMarkdown](http://thestudyofthehousehold.com/post/how-i-use-rmarkdown/)
 ### Git and GitHub
 * [GitHub's Guides to GitHub](https://guides.github.com/)
 * [Git Integration in RStudio (DataCamp)](https://www.datacamp.com/courses/working-with-the-rstudio-ide-part-2)

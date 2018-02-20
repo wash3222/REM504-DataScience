@@ -1,0 +1,77 @@
+---
+title: "REM 504 - Practicing Tidy Data"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook that we can use to explore some Tidy Data concepts (I may regret trying to introduce another new thing at the same time as tidy data, but it's a calculated risk). 
+
+R Markdown and Notebooks work within RStudio and let you merge your R coding with Markdown documents. With a Notebook, when you execute code within the notebook, the results appear beneath the code. With either R Markdown or Notebooks, you can "knit" your script/markdown into a Word Doc, PDF, HTML, etc.
+
+Below are some code examples for tidying a real-world, messy dataset.
+
+### 1. Import and explore the messy data
+```{r echo=TRUE}
+# Load libraries
+library(tidyverse)
+library(readxl)
+
+path <- path.expand("~/GitHub/REM504-DataScience/Practice_Datasets") # My R starts by default in my Documents directory. Need to build the path
+                                                  # to my GitHub repo
+file <- "why_we_cant_have_nice_things.xlsx"
+
+messy.data <- read_excel(paste(path,file,sep="/"), skip=3) # Read the data in and skip the first rows with narrative info
+
+glimpse(messy.data) #useful dplyr function for getting a bunch of info on a data frame/tibble
+```
+
+### 2. Need to fix the names
+Things like hard returns (e.g., "\r\n"), tabs (e.g., "\t"), spaces, or other strange characters can cause you problems down the road. It's best to have simple alphanumeric variable names in R unless you specifically need to do something more complicated (e.g., sometimes you need to build returns, etc. into column names for correct axes, legends, labels in ggplot graphics).
+
+You can fix the column names with the names function (*NOTE: functions like names() in R can be both read or write*)
+```{r echo=TRUE}
+names(messy.data) <- c("PlotNum","grz-Plant","grz-Seedhead","ungrz-Plant","ungrz-Seedhead")
+glimpse(messy.data)
+```
+
+### 3. Gather treatments into a single column
+Both of the statements below do the same thing. The second one uses the __%>%__ pipe operator. Pipes let you chain commands together and can improve readability in code.
+```{r echo=TRUE}
+tidy.data <- gather(messy.data,key="treatXindicator",value="density","grz-Plant","grz-Seedhead","ungrz-Plant","ungrz-Seedhead") # Standard version
+
+tidy.data <- messy.data %>% gather(key="treatXindicator",value="density","grz-Plant","grz-Seedhead","ungrz-Plant","ungrz-Seedhead") # version using pipe 
+
+glimpse(tidy.data)
+
+
+```
+
+### 4. Separate out the treatments from the indicators
+Again, both statements do the same thing, just latter uses the pipe.
+```{r echo=TRUE}
+tidier.data <- separate(tidy.data, treatXindicator, into=c("treatment","indicator"), sep="-") # standard form
+
+tidier.data <- tidy.data %>% separate(treatXindicator, into=c("treatment","indicator"), sep="-") # piped form
+
+glimpse(tidier.data)
+
+```
+
+### 5. Do Something with the data
+Now the data are in a format that is easy to work with.
+```{r echo=TRUE}
+ggplot(data=tidier.data,aes(x=treatment,y=density))+geom_boxplot()+facet_grid(~indicator)
+```
+
+
+
+## Extra: Power of the Pipe!
+Besides being the secret handshake of the tidyverse, pipes actually have a really cool use in streamlining your code. In the example above, we needed to take two steps to tidy our data, gathering the columns and then separating out the treatment and indicator labels. This required making an intermediate/temporary data object. With pipes, we can smash all that operation into a single (albeit long) statement. Piping can however fail spectacularly and requires dplyr package, when otherwsie might not be useful. 
+
+```{r echo=TRUE}
+one.shot.tidiest.data <- messy.data %>% gather(key="treatXindicator",value="density","grz-Plant","grz-Seedhead","ungrz-Plant","ungrz-Seedhead") %>% separate(treatXindicator, into=c("treatment","indicator"), sep="-") # piped form
+
+glimpse(one.shot.tidiest.data)
+```
+
