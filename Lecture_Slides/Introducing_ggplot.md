@@ -4,6 +4,7 @@
 __ggplot2__ is a package for producing high-quality graphics/charts/plots/maps from R. Sure, you can use base R functions for plotting, and your plots will definitely look like it. ggplot puts a lot of people off because of its complexity, but once you learn the basics of how it works, it's really pretty straightforward to use and very powerful.
 
 ![](img/ggplotmeme.jpeg)
+source: [http://xkcd.com](xkcd.com)
 
 ### Useful online resources for explaining ggplot
 - [https://ramnathv.github.io/pycon2014-r/visualize/ggplot2.html](Ramnath Vaidyanathan's R Introduction - Grammar of Graphics)

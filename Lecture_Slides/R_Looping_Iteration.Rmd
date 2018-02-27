@@ -1,0 +1,73 @@
+---
+title: "Iteration and Looping"
+output: html_notebook
+---
+
+Iteration and looping in R is useful for when you need to do the same operation over a set of objects, datasets, or observations, or when you want to run some simulations. You can easily set up iteration in R over multiple variables (as long as you can keep your head around that they're doing!). The basic iterator in R is the __for()__ function
+
+Check out this example of the basic for loop syntax.
+```{r}
+library(dplyr)
+
+for (i in 1:10) {  # Basic structure 
+  print(i)        # i is the "iterator". It's a counter in this case.
+}
+```
+ You can also iterate over lists of objects
+ 
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+```{r}
+for (month in c("Jan","Feb","Mar","Apr","May")) {
+  print(month)
+}
+```
+
+Use different R functions to create sets of objects to iterate over
+```{r}
+for (rand.num in rnorm(12)) {
+  print(paste("The Random number is: ",rand.num))
+}
+```
+
+Grab a list of files from a directory and iterate over those
+```{r}
+data.path <- "C:\\Users\\Jason Karl\\Documents\\GitHub\\REM504-DataScience\\Practice_Datasets"
+files <- list.files(data.path,pattern="*.csv")
+i <- 1 # set up a counter here so we can load the datasets iteratively
+out.data <- c()
+for (file in files) {
+  print(file)
+  out.data[[i]]<-read.csv(paste(data.path,file,sep="\\"))
+  i<-i+1
+}
+```
+
+For simulations, you can use loops to build your results
+```{r}
+out.data <- data.frame() # set up an empty data frame
+for (i in 1:10) {
+  var.rand <- rnorm(1)
+  var.now <- date()
+  var.other <- "Jason"
+  out.row <- data.frame(i=i, rand=var.rand, now=var.now, me=var.other)
+  out.data <- rbind(out.data,out.row)
+}
+glimpse(out.data)
+```
+
+
+You can also nest for loops
+```{r}
+out.data <- data.frame() # set up an empty data frame
+for (i in 1:10) {
+  for (j in 1:15) {
+    var.rand <- rnorm(1)
+    var.now <- date()
+    var.other <- "Jason"
+    out.row <- data.frame(i=i, j=j, rand=var.rand, now=var.now, me=var.other)
+    out.data <- rbind(out.data,out.row)
+  }
+}
+glimpse(out.data)
+```
+
