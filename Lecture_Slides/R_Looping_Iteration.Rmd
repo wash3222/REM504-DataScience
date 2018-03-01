@@ -3,11 +3,35 @@ title: "Iteration and Looping"
 output: html_notebook
 ---
 
-Iteration and looping in R is useful for when you need to do the same operation over a set of objects, datasets, or observations, or when you want to run some simulations. You can easily set up iteration in R over multiple variables (as long as you can keep your head around that they're doing!). The basic iterator in R is the __for()__ function
+Conditionals in R
+```{r}
+day <- "Tuesday"
+if (day=="Tuesday") {
+  print("today")
+}
+
+if (day=="Monday") {
+  print("yesterday")
+} else {
+  print("not yesterday")
+}
+
+if (day=="Monday") {
+  print("yesterday")
+} else if (day=="Tuesday") {
+  print("today")
+} else {
+  print("not yesterday")
+}
+```
+
+
+
+Iteration and looping in R is useful for when you need to do the same operation over a set of objects, datasets, or observations, or when you want to run some simulations. You can easily set up iteration in R over multiple variables (as long as you can keep your head around that they're doing!). The basic iterator in R is the __for()__ function.
 
 Check out this example of the basic for loop syntax.
 ```{r}
-library(dplyr)
+library(dplyr) #this is for somemthing else, not iteration
 
 for (i in 1:10) {  # Basic structure 
   print(i)        # i is the "iterator". It's a counter in this case.
@@ -37,7 +61,7 @@ i <- 1 # set up a counter here so we can load the datasets iteratively
 out.data <- c()
 for (file in files) {
   print(file)
-  out.data[[i]]<-read.csv(paste(data.path,file,sep="\\"))
+  out.data[[file]]<-read.csv(paste(data.path,file,sep="\\"))
   i<-i+1
 }
 ```

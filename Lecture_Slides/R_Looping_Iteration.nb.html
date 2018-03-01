@@ -172,25 +172,45 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
-<p>Iteration and looping in R is useful for when you need to do the same operation over a set of objects, datasets, or observations, or when you want to run some simulations. You can easily set up iteration in R over multiple variables (as long as you can keep your head around that they’re doing!). The basic iterator in R is the <strong>for()</strong> function</p>
+<p>Conditionals in R</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaWYgKGRheT09XCJNb25kYXlcIikge1xuICBwcmludChcInllc3RlcmRheVwiKVxufSBlbHNlIGlmIChkYXk9PVwiVHVlc2RheVwiKSB7XG4gIHByaW50KFwidG9kYXlcIilcbn0gZWxzZSB7XG4gIHByaW50KFwibm90IHllc3RlcmRheVwiKVxufVxuXG5gYGAifQ== -->
+<pre class="r"><code>if (day==&quot;Monday&quot;) {
+  print(&quot;yesterday&quot;)
+} else if (day==&quot;Tuesday&quot;) {
+  print(&quot;today&quot;)
+} else {
+  print(&quot;not yesterday&quot;)
+}
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwidG9kYXlcIlxuIn0= -->
+<pre><code>[1] &quot;today&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Iteration and looping in R is useful for when you need to do the same operation over a set of objects, datasets, or observations, or when you want to run some simulations. You can easily set up iteration in R over multiple variables (as long as you can keep your head around that they’re doing!). The basic iterator in R is the <strong>for()</strong> function.</p>
 <p>Check out this example of the basic for loop syntax.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShkcGx5cilcblxuYGBgIn0= -->
-<pre class="r"><code>library(dplyr)
-</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShkcGx5cikgI3RoaXMgaXMgZm9yIHNvbWVtdGhpbmcgZWxzZSwgbm90IGl0ZXJhdGlvblxuZm9yIChpIGluIDE6MTApIHsgICMgQmFzaWMgc3RydWN0dXJlIFxuICBwcmludChpKSAgICAgICAgIyBpIGlzIHRoZSBcIml0ZXJhdG9yXCIuIEl0J3MgYSBjb3VudGVyIGluIHRoaXMgY2FzZS5cbn1cbmBgYCJ9 -->
+<pre class="r"><code>library(dplyr) #this is for somemthing else, not iteration
+for (i in 1:10) {  # Basic structure 
+  print(i)        # i is the &quot;iterator&quot;. It's a counter in this case.
+}</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog46S847ixZHBseXLjpLzjuLJcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDjpLzjuLFwYWNrYWdlOnN0YXRz46S847iyOlxuXG4gICAgZmlsdGVyLCBsYWdcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDjpLzjuLFwYWNrYWdlOmJhc2XjpLzjuLI6XG5cbiAgICBpbnRlcnNlY3QsIHNldGRpZmYsIHNldGVxdWFsLCB1bmlvblxuIn0= -->
-<pre><code>
-Attaching package: &lt;U+393C&gt;&lt;U+3E31&gt;dplyr&lt;U+393C&gt;&lt;U+3E32&gt;
-
-The following objects are masked from &lt;U+393C&gt;&lt;U+3E31&gt;package:stats&lt;U+393C&gt;&lt;U+3E32&gt;:
-
-    filter, lag
-
-The following objects are masked from &lt;U+393C&gt;&lt;U+3E31&gt;package:base&lt;U+393C&gt;&lt;U+3E32&gt;:
-
-    intersect, setdiff, setequal, union</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDFcblsxXSAyXG5bMV0gM1xuWzFdIDRcblsxXSA1XG5bMV0gNlxuWzFdIDdcblsxXSA4XG5bMV0gOVxuWzFdIDEwXG4ifQ== -->
+<pre><code>[1] 1
+[1] 2
+[1] 3
+[1] 4
+[1] 5
+[1] 6
+[1] 7
+[1] 8
+[1] 9
+[1] 10</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -220,33 +240,33 @@ The following objects are masked from &lt;U+393C&gt;&lt;U+3E31&gt;package:base&l
   print(paste(&quot;The Random number is: &quot;,rand.num))
 }</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiVGhlIFJhbmRvbSBudW1iZXIgaXM6ICAwLjM2NTI3ODg2MDkzMzM3M1wiXG5bMV0gXCJUaGUgUmFuZG9tIG51bWJlciBpczogIDAuNTAyNDE3NDkwNDg0Njc2XCJcblsxXSBcIlRoZSBSYW5kb20gbnVtYmVyIGlzOiAgMC4yMjAxMzAxNjUzOTAwNThcIlxuWzFdIFwiVGhlIFJhbmRvbSBudW1iZXIgaXM6ICAwLjMyMTI1ODYzNjMxMjU1M1wiXG5bMV0gXCJUaGUgUmFuZG9tIG51bWJlciBpczogIC0wLjAwOTMzNDc2MzExMzIzMjQ1XCJcblsxXSBcIlRoZSBSYW5kb20gbnVtYmVyIGlzOiAgMC4zNzk0NjUyNDI3NDQ3NThcIlxuWzFdIFwiVGhlIFJhbmRvbSBudW1iZXIgaXM6ICAwLjM5MjU0MDc1NDA5NDg0MVwiXG5bMV0gXCJUaGUgUmFuZG9tIG51bWJlciBpczogIDAuNTkyNTE3OTk4ODQ4MjlcIlxuWzFdIFwiVGhlIFJhbmRvbSBudW1iZXIgaXM6ICAtMC4yOTkzMTEwOTk1NTAwMzJcIlxuWzFdIFwiVGhlIFJhbmRvbSBudW1iZXIgaXM6ICAwLjMwOTEzMDE2MzAyNDkzMlwiXG5bMV0gXCJUaGUgUmFuZG9tIG51bWJlciBpczogIC0wLjU0NjEyMTI0MjkzOTcwM1wiXG5bMV0gXCJUaGUgUmFuZG9tIG51bWJlciBpczogIC0wLjg3NDYzOTY5Nzk3MDc2N1wiXG4ifQ== -->
-<pre><code>[1] &quot;The Random number is:  0.365278860933373&quot;
-[1] &quot;The Random number is:  0.502417490484676&quot;
-[1] &quot;The Random number is:  0.220130165390058&quot;
-[1] &quot;The Random number is:  0.321258636312553&quot;
-[1] &quot;The Random number is:  -0.00933476311323245&quot;
-[1] &quot;The Random number is:  0.379465242744758&quot;
-[1] &quot;The Random number is:  0.392540754094841&quot;
-[1] &quot;The Random number is:  0.59251799884829&quot;
-[1] &quot;The Random number is:  -0.299311099550032&quot;
-[1] &quot;The Random number is:  0.309130163024932&quot;
-[1] &quot;The Random number is:  -0.546121242939703&quot;
-[1] &quot;The Random number is:  -0.874639697970767&quot;</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiVGhlIFJhbmRvbSBudW1iZXIgaXM6ICAtMS4wMTMzNzcxMDQ3NjUyM1wiXG5bMV0gXCJUaGUgUmFuZG9tIG51bWJlciBpczogIDAuMzg4NzA1MjAzMzE4NjE4XCJcblsxXSBcIlRoZSBSYW5kb20gbnVtYmVyIGlzOiAgMC40MDg2MTAwMzA5NTMzNDJcIlxuWzFdIFwiVGhlIFJhbmRvbSBudW1iZXIgaXM6ICAtMS4zNTIzNzQyMDIzNTE3OVwiXG5bMV0gXCJUaGUgUmFuZG9tIG51bWJlciBpczogIDAuNzg0MjQ5MDMyNzIyMzM5XCJcblsxXSBcIlRoZSBSYW5kb20gbnVtYmVyIGlzOiAgMC43Mjc1OTMxMzc3Njk5ODlcIlxuWzFdIFwiVGhlIFJhbmRvbSBudW1iZXIgaXM6ICAwLjI2NzUzNDI1Njc0MzYwMlwiXG5bMV0gXCJUaGUgUmFuZG9tIG51bWJlciBpczogIC0xLjAyNzkyOTQ0NDU5NjAxXCJcblsxXSBcIlRoZSBSYW5kb20gbnVtYmVyIGlzOiAgLTAuNTI0Nzk1NjYwNzg4MzU0XCJcblsxXSBcIlRoZSBSYW5kb20gbnVtYmVyIGlzOiAgMC44Mjc4MzgxMzg3MzU5NVwiXG5bMV0gXCJUaGUgUmFuZG9tIG51bWJlciBpczogIC0xLjY4MjUwMDcxMzc3ODI0XCJcblsxXSBcIlRoZSBSYW5kb20gbnVtYmVyIGlzOiAgMS4zNDcyMTA3MzM1NjYzOFwiXG4ifQ== -->
+<pre><code>[1] &quot;The Random number is:  -1.01337710476523&quot;
+[1] &quot;The Random number is:  0.388705203318618&quot;
+[1] &quot;The Random number is:  0.408610030953342&quot;
+[1] &quot;The Random number is:  -1.35237420235179&quot;
+[1] &quot;The Random number is:  0.784249032722339&quot;
+[1] &quot;The Random number is:  0.727593137769989&quot;
+[1] &quot;The Random number is:  0.267534256743602&quot;
+[1] &quot;The Random number is:  -1.02792944459601&quot;
+[1] &quot;The Random number is:  -0.524795660788354&quot;
+[1] &quot;The Random number is:  0.82783813873595&quot;
+[1] &quot;The Random number is:  -1.68250071377824&quot;
+[1] &quot;The Random number is:  1.34721073356638&quot;</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Grab a list of files from a directory and iterate over those</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0YS5wYXRoIDwtIFwiQzpcXFxcVXNlcnNcXFxcSmFzb24gS2FybFxcXFxEb2N1bWVudHNcXFxcR2l0SHViXFxcXFJFTTUwNC1EYXRhU2NpZW5jZVxcXFxQcmFjdGljZV9EYXRhc2V0c1wiXG5maWxlcyA8LSBsaXN0LmZpbGVzKGRhdGEucGF0aCxwYXR0ZXJuPVwiKi5jc3ZcIilcbmkgPC0gMSAjIHNldCB1cCBhIGNvdW50ZXIgaGVyZSBzbyB3ZSBjYW4gbG9hZCB0aGUgZGF0YXNldHMgaXRlcmF0aXZlbHlcbm91dC5kYXRhIDwtIGMoKVxuZm9yIChmaWxlIGluIGZpbGVzKSB7XG4gIHByaW50KGZpbGUpXG4gIG91dC5kYXRhW1tpXV08LXJlYWQuY3N2KHBhc3RlKGRhdGEucGF0aCxmaWxlLHNlcD1cIlxcXFxcIikpXG4gIGk8LWkrMVxufVxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0YS5wYXRoIDwtIFwiQzpcXFxcVXNlcnNcXFxcSmFzb24gS2FybFxcXFxEb2N1bWVudHNcXFxcR2l0SHViXFxcXFJFTTUwNC1EYXRhU2NpZW5jZVxcXFxQcmFjdGljZV9EYXRhc2V0c1wiXG5maWxlcyA8LSBsaXN0LmZpbGVzKGRhdGEucGF0aCxwYXR0ZXJuPVwiKi5jc3ZcIilcbmkgPC0gMSAjIHNldCB1cCBhIGNvdW50ZXIgaGVyZSBzbyB3ZSBjYW4gbG9hZCB0aGUgZGF0YXNldHMgaXRlcmF0aXZlbHlcbm91dC5kYXRhIDwtIGMoKVxuZm9yIChmaWxlIGluIGZpbGVzKSB7XG4gIHByaW50KGZpbGUpXG4gIG91dC5kYXRhW1tmaWxlXV08LXJlYWQuY3N2KHBhc3RlKGRhdGEucGF0aCxmaWxlLHNlcD1cIlxcXFxcIikpXG4gIGk8LWkrMVxufVxuYGBgIn0= -->
 <pre class="r"><code>data.path &lt;- &quot;C:\\Users\\Jason Karl\\Documents\\GitHub\\REM504-DataScience\\Practice_Datasets&quot;
 files &lt;- list.files(data.path,pattern=&quot;*.csv&quot;)
 i &lt;- 1 # set up a counter here so we can load the datasets iteratively
 out.data &lt;- c()
 for (file in files) {
   print(file)
-  out.data[[i]]&lt;-read.csv(paste(data.path,file,sep=&quot;\\&quot;))
+  out.data[[file]]&lt;-read.csv(paste(data.path,file,sep=&quot;\\&quot;))
   i&lt;-i+1
 }</code></pre>
 <!-- rnb-source-end -->
@@ -262,25 +282,31 @@ for (file in files) {
 <p>For simulations, you can use loops to build your results</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2xpbXBzZShvdXQuZGF0YSlcblxuYGBgIn0= -->
-<pre class="r"><code>glimpse(out.data)
-</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxub3V0LmRhdGEgPC0gZGF0YS5mcmFtZSgpICMgc2V0IHVwIGFuIGVtcHR5IGRhdGEgZnJhbWVcbmZvciAoaSBpbiAxOjEwKSB7XG4gIHZhci5yYW5kIDwtIHJub3JtKDEpXG4gIHZhci5ub3cgPC0gZGF0ZSgpXG4gIHZhci5vdGhlciA8LSBcIkphc29uXCJcbiAgb3V0LnJvdyA8LSBkYXRhLmZyYW1lKGk9aSwgcmFuZD12YXIucmFuZCwgbm93PXZhci5ub3csIG1lPXZhci5vdGhlcilcbiAgb3V0LmRhdGEgPC0gcmJpbmQob3V0LmRhdGEsb3V0LnJvdylcbn1cbmdsaW1wc2Uob3V0LmRhdGEpXG5gYGAifQ== -->
+<pre class="r"><code>out.data &lt;- data.frame() # set up an empty data frame
+for (i in 1:10) {
+  var.rand &lt;- rnorm(1)
+  var.now &lt;- date()
+  var.other &lt;- &quot;Jason&quot;
+  out.row &lt;- data.frame(i=i, rand=var.rand, now=var.now, me=var.other)
+  out.data &lt;- rbind(out.data,out.row)
+}
+glimpse(out.data)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiT2JzZXJ2YXRpb25zOiAxNTBcblZhcmlhYmxlczogNVxuJCBpICAgIDxpbnQ+IDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDIsIDIsIDIsIDIsIC4uLlxuJCBqICAgIDxpbnQ+IDEsIDIsIDMsIDQsIDUsIDYsIDcsIDgsIDksIDEwLCAxMSwgMTIsIDEzLCAxNCwgMTUsIDEsIDIsIC4uLlxuJCByYW5kIDxkYmw+IC0wLjM1NTA2MTAwLCAwLjUyMjkwNTA4LCAtMS4wMjU4ODczNiwgMC42ODg1ODY3NCwgMC4wOTg4OC4uLlxuJCBub3cgIDxmY3RyPiBUdWUgRmViIDI3IDE0OjI0OjEwIDIwMTgsIFR1ZSBGZWIgMjcgMTQ6MjQ6MTAgMjAxOCwgVHVlIC4uLlxuJCBtZSAgIDxmY3RyPiBKYXNvbiwgSmFzb24sIEphc29uLCBKYXNvbiwgSmFzb24sIEphc29uLCBKYXNvbiwgSmFzb24sIC4uLlxuIn0= -->
-<pre><code>Observations: 150
-Variables: 5
-$ i    &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, ...
-$ j    &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 2, ...
-$ rand &lt;dbl&gt; -0.35506100, 0.52290508, -1.02588736, 0.68858674, 0.09888...
-$ now  &lt;fctr&gt; Tue Feb 27 14:24:10 2018, Tue Feb 27 14:24:10 2018, Tue ...
-$ me   &lt;fctr&gt; Jason, Jason, Jason, Jason, Jason, Jason, Jason, Jason, ...</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiT2JzZXJ2YXRpb25zOiAxMFxuVmFyaWFibGVzOiA0XG4kIGkgICAgPGludD4gMSwgMiwgMywgNCwgNSwgNiwgNywgOCwgOSwgMTBcbiQgcmFuZCA8ZGJsPiAwLjk2MzM1NTUsIDIuMDQyNzk5OCwgMC44NDg3MTk0LCAtMC42NzA2NzM4LCAxLjM0ODQyNC4uLlxuJCBub3cgIDxmY3RyPiBUdWUgRmViIDI3IDE1OjA3OjE0IDIwMTgsIFR1ZSBGZWIgMjcgMTU6MDc6MTQgMjAxOCwgLi4uXG4kIG1lICAgPGZjdHI+IEphc29uLCBKYXNvbiwgSmFzb24sIEphc29uLCBKYXNvbiwgSmFzb24sIEphc29uLCBKYXMuLi5cbiJ9 -->
+<pre><code>Observations: 10
+Variables: 4
+$ i    &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+$ rand &lt;dbl&gt; 0.9633555, 2.0427998, 0.8487194, -0.6706738, 1.348424...
+$ now  &lt;fctr&gt; Tue Feb 27 15:07:14 2018, Tue Feb 27 15:07:14 2018, ...
+$ me   &lt;fctr&gt; Jason, Jason, Jason, Jason, Jason, Jason, Jason, Jas...</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>You can also nest for loops</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxub3V0LmRhdGEgPC0gZGF0YS5mcmFtZSgpICMgc2V0IHVwIGFuIGVtcHR5IGRhdGEgZnJhbWVcbmZvciAoaSBpbiAxOjEwKSB7XG4gIGZvciAoaiBpbiAxOjE1KSB7XG4gICAgdmFyLnJhbmQgPC0gcm5vcm0oMSlcbiAgICB2YXIubm93IDwtIGRhdGUoKVxuICAgIHZhci5vdGhlciA8LSBcIkphc29uXCJcbiAgICBvdXQucm93IDwtIGRhdGEuZnJhbWUoaT1pLCBqPWosIHJhbmQ9dmFyLnJhbmQsIG5vdz12YXIubm93LCBtZT12YXIub3RoZXIpXG4gICAgb3V0LmRhdGEgPC0gcmJpbmQob3V0LmRhdGEsb3V0LnJvdylcbiAgfVxufVxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxub3V0LmRhdGEgPC0gZGF0YS5mcmFtZSgpICMgc2V0IHVwIGFuIGVtcHR5IGRhdGEgZnJhbWVcbmZvciAoaSBpbiAxOjEwKSB7XG4gIGZvciAoaiBpbiAxOjE1KSB7XG4gICAgdmFyLnJhbmQgPC0gcm5vcm0oMSlcbiAgICB2YXIubm93IDwtIGRhdGUoKVxuICAgIHZhci5vdGhlciA8LSBcIkphc29uXCJcbiAgICBvdXQucm93IDwtIGRhdGEuZnJhbWUoaT1pLCBqPWosIHJhbmQ9dmFyLnJhbmQsIG5vdz12YXIubm93LCBtZT12YXIub3RoZXIpXG4gICAgb3V0LmRhdGEgPC0gcmJpbmQob3V0LmRhdGEsb3V0LnJvdylcbiAgfVxufVxuZ2xpbXBzZShvdXQuZGF0YSlcbmBgYCJ9 -->
 <pre class="r"><code>out.data &lt;- data.frame() # set up an empty data frame
 for (i in 1:10) {
   for (j in 1:15) {
@@ -290,13 +316,23 @@ for (i in 1:10) {
     out.row &lt;- data.frame(i=i, j=j, rand=var.rand, now=var.now, me=var.other)
     out.data &lt;- rbind(out.data,out.row)
   }
-}</code></pre>
+}
+glimpse(out.data)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiT2JzZXJ2YXRpb25zOiAxNTBcblZhcmlhYmxlczogNVxuJCBpICAgIDxpbnQ+IDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDIsIDIsIDIsLi4uXG4kIGogICAgPGludD4gMSwgMiwgMywgNCwgNSwgNiwgNywgOCwgOSwgMTAsIDExLCAxMiwgMTMsIDE0LCAxNSwgMSwuLi5cbiQgcmFuZCA8ZGJsPiAwLjU1MzYyNTYzLCAwLjg5MzU2OTIwLCAtMC45ODM4NTI2NCwgMi4wNjE3NTM2NywgMC4xNy4uLlxuJCBub3cgIDxmY3RyPiBUdWUgRmViIDI3IDE1OjEwOjM1IDIwMTgsIFR1ZSBGZWIgMjcgMTU6MTA6MzUgMjAxOCwgLi4uXG4kIG1lICAgPGZjdHI+IEphc29uLCBKYXNvbiwgSmFzb24sIEphc29uLCBKYXNvbiwgSmFzb24sIEphc29uLCBKYXMuLi5cbiJ9 -->
+<pre><code>Observations: 150
+Variables: 5
+$ i    &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2,...
+$ j    &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1,...
+$ rand &lt;dbl&gt; 0.55362563, 0.89356920, -0.98385264, 2.06175367, 0.17...
+$ now  &lt;fctr&gt; Tue Feb 27 15:10:35 2018, Tue Feb 27 15:10:35 2018, ...
+$ me   &lt;fctr&gt; Jason, Jason, Jason, Jason, Jason, Jason, Jason, Jas...</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkl0ZXJhdGlvbiBhbmQgTG9vcGluZyINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCkl0ZXJhdGlvbiBhbmQgbG9vcGluZyBpbiBSIGlzIHVzZWZ1bCBmb3Igd2hlbiB5b3UgbmVlZCB0byBkbyB0aGUgc2FtZSBvcGVyYXRpb24gb3ZlciBhIHNldCBvZiBvYmplY3RzLCBkYXRhc2V0cywgb3Igb2JzZXJ2YXRpb25zLCBvciB3aGVuIHlvdSB3YW50IHRvIHJ1biBzb21lIHNpbXVsYXRpb25zLiBZb3UgY2FuIGVhc2lseSBzZXQgdXAgaXRlcmF0aW9uIGluIFIgb3ZlciBtdWx0aXBsZSB2YXJpYWJsZXMgKGFzIGxvbmcgYXMgeW91IGNhbiBrZWVwIHlvdXIgaGVhZCBhcm91bmQgdGhhdCB0aGV5J3JlIGRvaW5nISkuIFRoZSBiYXNpYyBpdGVyYXRvciBpbiBSIGlzIHRoZSBfX2ZvcigpX18gZnVuY3Rpb24NCg0KQ2hlY2sgb3V0IHRoaXMgZXhhbXBsZSBvZiB0aGUgYmFzaWMgZm9yIGxvb3Agc3ludGF4Lg0KYGBge3J9DQpsaWJyYXJ5KGRwbHlyKQ0KDQpmb3IgKGkgaW4gMToxMCkgeyAgIyBCYXNpYyBzdHJ1Y3R1cmUgDQogIHByaW50KGkpICAgICAgICAjIGkgaXMgdGhlICJpdGVyYXRvciIuIEl0J3MgYSBjb3VudGVyIGluIHRoaXMgY2FzZS4NCn0NCmBgYA0KIFlvdSBjYW4gYWxzbyBpdGVyYXRlIG92ZXIgbGlzdHMgb2Ygb2JqZWN0cw0KIA0KQWRkIGEgbmV3IGNodW5rIGJ5IGNsaWNraW5nIHRoZSAqSW5zZXJ0IENodW5rKiBidXR0b24gb24gdGhlIHRvb2xiYXIgb3IgYnkgcHJlc3NpbmcgKkN0cmwrQWx0K0kqLg0KYGBge3J9DQpmb3IgKG1vbnRoIGluIGMoIkphbiIsIkZlYiIsIk1hciIsIkFwciIsIk1heSIpKSB7DQogIHByaW50KG1vbnRoKQ0KfQ0KYGBgDQoNClVzZSBkaWZmZXJlbnQgUiBmdW5jdGlvbnMgdG8gY3JlYXRlIHNldHMgb2Ygb2JqZWN0cyB0byBpdGVyYXRlIG92ZXINCmBgYHtyfQ0KZm9yIChyYW5kLm51bSBpbiBybm9ybSgxMikpIHsNCiAgcHJpbnQocGFzdGUoIlRoZSBSYW5kb20gbnVtYmVyIGlzOiAiLHJhbmQubnVtKSkNCn0NCmBgYA0KDQpHcmFiIGEgbGlzdCBvZiBmaWxlcyBmcm9tIGEgZGlyZWN0b3J5IGFuZCBpdGVyYXRlIG92ZXIgdGhvc2UNCmBgYHtyfQ0KZGF0YS5wYXRoIDwtICJDOlxcVXNlcnNcXEphc29uIEthcmxcXERvY3VtZW50c1xcR2l0SHViXFxSRU01MDQtRGF0YVNjaWVuY2VcXFByYWN0aWNlX0RhdGFzZXRzIg0KZmlsZXMgPC0gbGlzdC5maWxlcyhkYXRhLnBhdGgscGF0dGVybj0iKi5jc3YiKQ0KaSA8LSAxICMgc2V0IHVwIGEgY291bnRlciBoZXJlIHNvIHdlIGNhbiBsb2FkIHRoZSBkYXRhc2V0cyBpdGVyYXRpdmVseQ0Kb3V0LmRhdGEgPC0gYygpDQpmb3IgKGZpbGUgaW4gZmlsZXMpIHsNCiAgcHJpbnQoZmlsZSkNCiAgb3V0LmRhdGFbW2ldXTwtcmVhZC5jc3YocGFzdGUoZGF0YS5wYXRoLGZpbGUsc2VwPSJcXCIpKQ0KICBpPC1pKzENCn0NCmBgYA0KDQpGb3Igc2ltdWxhdGlvbnMsIHlvdSBjYW4gdXNlIGxvb3BzIHRvIGJ1aWxkIHlvdXIgcmVzdWx0cw0KYGBge3J9DQpvdXQuZGF0YSA8LSBkYXRhLmZyYW1lKCkgIyBzZXQgdXAgYW4gZW1wdHkgZGF0YSBmcmFtZQ0KZm9yIChpIGluIDE6MTApIHsNCiAgdmFyLnJhbmQgPC0gcm5vcm0oMSkNCiAgdmFyLm5vdyA8LSBkYXRlKCkNCiAgdmFyLm90aGVyIDwtICJKYXNvbiINCiAgb3V0LnJvdyA8LSBkYXRhLmZyYW1lKGk9aSwgcmFuZD12YXIucmFuZCwgbm93PXZhci5ub3csIG1lPXZhci5vdGhlcikNCiAgb3V0LmRhdGEgPC0gcmJpbmQob3V0LmRhdGEsb3V0LnJvdykNCn0NCmdsaW1wc2Uob3V0LmRhdGEpDQpgYGANCg0KDQpZb3UgY2FuIGFsc28gbmVzdCBmb3IgbG9vcHMNCmBgYHtyfQ0Kb3V0LmRhdGEgPC0gZGF0YS5mcmFtZSgpICMgc2V0IHVwIGFuIGVtcHR5IGRhdGEgZnJhbWUNCmZvciAoaSBpbiAxOjEwKSB7DQogIGZvciAoaiBpbiAxOjE1KSB7DQogICAgdmFyLnJhbmQgPC0gcm5vcm0oMSkNCiAgICB2YXIubm93IDwtIGRhdGUoKQ0KICAgIHZhci5vdGhlciA8LSAiSmFzb24iDQogICAgb3V0LnJvdyA8LSBkYXRhLmZyYW1lKGk9aSwgaj1qLCByYW5kPXZhci5yYW5kLCBub3c9dmFyLm5vdywgbWU9dmFyLm90aGVyKQ0KICAgIG91dC5kYXRhIDwtIHJiaW5kKG91dC5kYXRhLG91dC5yb3cpDQogIH0NCn0NCmdsaW1wc2Uob3V0LmRhdGEpDQpgYGANCg0K</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkl0ZXJhdGlvbiBhbmQgTG9vcGluZyINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCkNvbmRpdGlvbmFscyBpbiBSDQpgYGB7cn0NCmRheSA8LSAiVHVlc2RheSINCmlmIChkYXk9PSJUdWVzZGF5Iikgew0KICBwcmludCgidG9kYXkiKQ0KfQ0KDQppZiAoZGF5PT0iTW9uZGF5Iikgew0KICBwcmludCgieWVzdGVyZGF5IikNCn0gZWxzZSB7DQogIHByaW50KCJub3QgeWVzdGVyZGF5IikNCn0NCg0KaWYgKGRheT09Ik1vbmRheSIpIHsNCiAgcHJpbnQoInllc3RlcmRheSIpDQp9IGVsc2UgaWYgKGRheT09IlR1ZXNkYXkiKSB7DQogIHByaW50KCJ0b2RheSIpDQp9IGVsc2Ugew0KICBwcmludCgibm90IHllc3RlcmRheSIpDQp9DQpgYGANCg0KDQoNCkl0ZXJhdGlvbiBhbmQgbG9vcGluZyBpbiBSIGlzIHVzZWZ1bCBmb3Igd2hlbiB5b3UgbmVlZCB0byBkbyB0aGUgc2FtZSBvcGVyYXRpb24gb3ZlciBhIHNldCBvZiBvYmplY3RzLCBkYXRhc2V0cywgb3Igb2JzZXJ2YXRpb25zLCBvciB3aGVuIHlvdSB3YW50IHRvIHJ1biBzb21lIHNpbXVsYXRpb25zLiBZb3UgY2FuIGVhc2lseSBzZXQgdXAgaXRlcmF0aW9uIGluIFIgb3ZlciBtdWx0aXBsZSB2YXJpYWJsZXMgKGFzIGxvbmcgYXMgeW91IGNhbiBrZWVwIHlvdXIgaGVhZCBhcm91bmQgdGhhdCB0aGV5J3JlIGRvaW5nISkuIFRoZSBiYXNpYyBpdGVyYXRvciBpbiBSIGlzIHRoZSBfX2ZvcigpX18gZnVuY3Rpb24uDQoNCkNoZWNrIG91dCB0aGlzIGV4YW1wbGUgb2YgdGhlIGJhc2ljIGZvciBsb29wIHN5bnRheC4NCmBgYHtyfQ0KbGlicmFyeShkcGx5cikgI3RoaXMgaXMgZm9yIHNvbWVtdGhpbmcgZWxzZSwgbm90IGl0ZXJhdGlvbg0KDQpmb3IgKGkgaW4gMToxMCkgeyAgIyBCYXNpYyBzdHJ1Y3R1cmUgDQogIHByaW50KGkpICAgICAgICAjIGkgaXMgdGhlICJpdGVyYXRvciIuIEl0J3MgYSBjb3VudGVyIGluIHRoaXMgY2FzZS4NCn0NCmBgYA0KIFlvdSBjYW4gYWxzbyBpdGVyYXRlIG92ZXIgbGlzdHMgb2Ygb2JqZWN0cw0KIA0KQWRkIGEgbmV3IGNodW5rIGJ5IGNsaWNraW5nIHRoZSAqSW5zZXJ0IENodW5rKiBidXR0b24gb24gdGhlIHRvb2xiYXIgb3IgYnkgcHJlc3NpbmcgKkN0cmwrQWx0K0kqLg0KYGBge3J9DQpmb3IgKG1vbnRoIGluIGMoIkphbiIsIkZlYiIsIk1hciIsIkFwciIsIk1heSIpKSB7DQogIHByaW50KG1vbnRoKQ0KfQ0KYGBgDQoNClVzZSBkaWZmZXJlbnQgUiBmdW5jdGlvbnMgdG8gY3JlYXRlIHNldHMgb2Ygb2JqZWN0cyB0byBpdGVyYXRlIG92ZXINCmBgYHtyfQ0KZm9yIChyYW5kLm51bSBpbiBybm9ybSgxMikpIHsNCiAgcHJpbnQocGFzdGUoIlRoZSBSYW5kb20gbnVtYmVyIGlzOiAiLHJhbmQubnVtKSkNCn0NCmBgYA0KDQpHcmFiIGEgbGlzdCBvZiBmaWxlcyBmcm9tIGEgZGlyZWN0b3J5IGFuZCBpdGVyYXRlIG92ZXIgdGhvc2UNCmBgYHtyfQ0KZGF0YS5wYXRoIDwtICJDOlxcVXNlcnNcXEphc29uIEthcmxcXERvY3VtZW50c1xcR2l0SHViXFxSRU01MDQtRGF0YVNjaWVuY2VcXFByYWN0aWNlX0RhdGFzZXRzIg0KZmlsZXMgPC0gbGlzdC5maWxlcyhkYXRhLnBhdGgscGF0dGVybj0iKi5jc3YiKQ0KaSA8LSAxICMgc2V0IHVwIGEgY291bnRlciBoZXJlIHNvIHdlIGNhbiBsb2FkIHRoZSBkYXRhc2V0cyBpdGVyYXRpdmVseQ0Kb3V0LmRhdGEgPC0gYygpDQpmb3IgKGZpbGUgaW4gZmlsZXMpIHsNCiAgcHJpbnQoZmlsZSkNCiAgb3V0LmRhdGFbW2ZpbGVdXTwtcmVhZC5jc3YocGFzdGUoZGF0YS5wYXRoLGZpbGUsc2VwPSJcXCIpKQ0KICBpPC1pKzENCn0NCmBgYA0KDQpGb3Igc2ltdWxhdGlvbnMsIHlvdSBjYW4gdXNlIGxvb3BzIHRvIGJ1aWxkIHlvdXIgcmVzdWx0cw0KYGBge3J9DQpvdXQuZGF0YSA8LSBkYXRhLmZyYW1lKCkgIyBzZXQgdXAgYW4gZW1wdHkgZGF0YSBmcmFtZQ0KZm9yIChpIGluIDE6MTApIHsNCiAgdmFyLnJhbmQgPC0gcm5vcm0oMSkNCiAgdmFyLm5vdyA8LSBkYXRlKCkNCiAgdmFyLm90aGVyIDwtICJKYXNvbiINCiAgb3V0LnJvdyA8LSBkYXRhLmZyYW1lKGk9aSwgcmFuZD12YXIucmFuZCwgbm93PXZhci5ub3csIG1lPXZhci5vdGhlcikNCiAgb3V0LmRhdGEgPC0gcmJpbmQob3V0LmRhdGEsb3V0LnJvdykNCn0NCmdsaW1wc2Uob3V0LmRhdGEpDQpgYGANCg0KDQpZb3UgY2FuIGFsc28gbmVzdCBmb3IgbG9vcHMNCmBgYHtyfQ0Kb3V0LmRhdGEgPC0gZGF0YS5mcmFtZSgpICMgc2V0IHVwIGFuIGVtcHR5IGRhdGEgZnJhbWUNCmZvciAoaSBpbiAxOjEwKSB7DQogIGZvciAoaiBpbiAxOjE1KSB7DQogICAgdmFyLnJhbmQgPC0gcm5vcm0oMSkNCiAgICB2YXIubm93IDwtIGRhdGUoKQ0KICAgIHZhci5vdGhlciA8LSAiSmFzb24iDQogICAgb3V0LnJvdyA8LSBkYXRhLmZyYW1lKGk9aSwgaj1qLCByYW5kPXZhci5yYW5kLCBub3c9dmFyLm5vdywgbWU9dmFyLm90aGVyKQ0KICAgIG91dC5kYXRhIDwtIHJiaW5kKG91dC5kYXRhLG91dC5yb3cpDQogIH0NCn0NCmdsaW1wc2Uob3V0LmRhdGEpDQpgYGANCg0K</div>
 
 
 
