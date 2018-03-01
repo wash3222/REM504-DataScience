@@ -18,10 +18,10 @@ setwd(data.path)
 
 ## Read in a couple of shapefiles
 countries <- readOGR(dsn="countries.shp",layer="countries") # Specify the shapefile as the data source name
-countries <- readOGR(dsn=".",layer="countries") # Also works to specify "." as dsn
+countries <- readOGR(dsn="C:\\Users\\Jason Karl\\Documents\\GitHub\\REM504-DataScience\\Practice_Datasets",layer="countries") # Also works to specify "." as dsn
 countries.dd <- spTransform(countries, CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0")) # My countries were in a projected coordinate system. Needed to convert to geographic decimal decrees
 
-plos_blocks <- readOGR(dsn=".", layer="PLOS_re_5deg_blocks",stringsAsFactors = FALSE)
+plos_blocks <- readOGR(dsn="C:\\Users\\Jason Karl\\Documents\\GitHub\\REM504-DataScience\\Practice_Datasets", layer="PLOS_re_5deg_blocks",stringsAsFactors = FALSE)
 ```
 
 ### Crappy plots
