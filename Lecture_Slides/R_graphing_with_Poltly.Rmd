@@ -32,7 +32,7 @@ ggplotly(sc.plot)
 Plotly has some cool features for doing 3D graphics. The structure is a bit different than ggplot, though. Let's run an example with a test LiDAR dataset of a shrub.
 
 ```{r}
-pc <- readLAS("C:\\Users\\Jason Karl\\Google Drive\\UAS\\point_cloud_analysis\\test_shrub.las") # Load the LiDAR LAS file.
+pc <- readLAS("C:\\Users\\Jason Karl\\Documents\\GitHub\\REM504-DataScience\\Practice_Datasets\\test_shrub.las") # Load the LiDAR LAS file.
 
 ## Grab just the x, y, and z coordinate values -that'a all we need here.
 pc.df <- pc@data[,c("X","Y","Z")] 
