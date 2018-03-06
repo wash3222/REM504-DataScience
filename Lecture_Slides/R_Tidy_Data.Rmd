@@ -17,7 +17,7 @@ Below are some code examples for tidying a real-world, messy dataset.
 library(tidyverse)
 library(readxl)
 
-path <- path.expand("~/GitHub/REM504-DataScience/Practice_Datasets") # My R starts by default in my Documents directory. Need to build the path
+path <- path.expand("~/504-DataScience/Practice_Datasets") # My R starts by default in my Documents directory. Need to build the path
                                                   # to my GitHub repo
 file <- "why_we_cant_have_nice_things.xlsx"
 
