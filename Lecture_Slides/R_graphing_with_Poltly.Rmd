@@ -1,0 +1,85 @@
+---
+title: "Graphing with Plotly"
+output: html_notebook
+---
+
+Plotly is a cool R package for making interactive graphs. You can display them within R studio, embed them in Shiny apps or Markdown reports, or upload them to Plotly's web server. Plotly can work with standard ggplot syntax, but can also be used to do cool 3D graphics that ggplot can't easily do.
+
+```{r}
+library(plotly)
+library(dplyr)
+library(lidR) # We'll need these for the 3D example.
+library(VoxR)
+```
+## Interactive ggplot graphs
+
+First, we'll create a basic scatter plot with ggplot.
+
+```{r}
+height.sims <- read.csv("C:\\Users\\Jason Karl\\Documents\\GitHub\\REM504-DataScience\\Practice_Datasets\\height_compare_sims.csv", header = T, stringsAsFactors = F)
+sc.plot <- ggplot(data=height.sims[height.sims$haf.sum>0,], aes(x=aim.sum,y=haf.sum))+geom_point()+
+            geom_smooth(method="lm")
+sc.plot
+```
+Now let's pass it to plotly
+
+```{r}
+ggplotly(sc.plot)
+```
+
+
+## 3D graphs with Plotly
+Plotly has some cool features for doing 3D graphics. The structure is a bit different than ggplot, though. Let's run an example with a test LiDAR dataset of a shrub.
+
+```{r}
+pc <- readLAS("C:\\Users\\Jason Karl\\Documents\\GitHub\\REM504-DataScience\\Practice_Datasets\\test_shrub.las") # Load the LiDAR LAS file.
+
+## Grab just the x, y, and z coordinate values -that'a all we need here.
+pc.df <- pc@data[,c("X","Y","Z")] 
+
+
+## Let's subset the point cloud so we can visualize it easily in R
+pc.subset <- sample_n(pc.df, 20000, replace=F)
+
+## Now use plotly to make a graph
+q <- plot_ly(pc.subset, x=~X, y=~Y, z=~Z, type="scatter3d", 
+             mode="markers", 
+             marker=list(color="#343434", size=1)) %>% 
+  add_markers() %>%
+  layout(scene=list(xaxis=list(showticklabels=FALSE, title="X"),  #Turn off the axis numbers and relabel
+                    yaxis=list(showticklabels=FALSE, title="Y"),
+                    zaxis=list(showticklabels=FALSE, title="Height")))
+q
+
+```
+
+That's pretty cool. Let's do some voxel analysis (think Minecraft) of this point cloud by summarizing how many lidar points fall within each voxel.
+
+```{r}
+## Run the Voxel analysis
+pc.scale <- scale(pc.df, center=c(min(pc.df[,1]),min(pc.df[,2]),min(pc.df[,3]))) ## Rescale the data so that it's in meters and not projection units (OPTIONAL STEP)
+pc.vox <- vox(pc.scale,res=0.1) ## Finally run the vox command
+## res is the size of the voxel in units of the original coordinate system. So 0.1 in this case is a 10cm voxel
+pc.vox.5 <- pc.vox[pc.vox$nbpts>5,]  ## Filter out voxels with less than 2 points (optional too)
+
+
+## Plot the voxelized point cloud using plotly
+## voxels are represented as squares (it actually plots them as points, but we can resize the squares to approximate the voxels)
+## Color of the voxels correspond to how many points from the cloud fell in each voxel
+p <- plot_ly(pc.vox.5, x=~data...1.,y=~data...2.,z=~data...3.,
+             marker=list(symbol="square",color=~nbpts,colorscale="Blues", showscale = TRUE,size=5,reversescale=T)) %>%
+  add_markers() %>%
+  layout(scene = list(xaxis = list(title = 'X'),
+                      yaxis = list(title = 'Y'),
+                      zaxis = list(title = 'Height')),
+         annotations = list(
+           x = 1.15,
+           y = 1.05,
+           text = 'Points/Voxel',
+           xref = 'paper',
+           yref = 'paper',
+           showarrow = FALSE
+         ))
+p
+```
+

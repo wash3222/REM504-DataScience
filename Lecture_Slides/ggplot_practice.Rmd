@@ -1,0 +1,60 @@
+---
+title: "ggplot practice"
+output: html_notebook
+---
+
+This is a notebook for practicing with ggplot. We will use the tidy_YST_data.csv file we created last week.
+
+```{r}
+library(ggplot2) # Load ggplot
+
+ht_data <- read.csv("~/GitHub/REM504-DataScience/Practice_Datasets/height_compare_sims.csv", header = TRUE, stringsAsFactors = FALSE)
+View(ht_data)
+```
+
+This dataset is from a set of simulations I ran comparing two different methods for measuring vegetation height. We want to look at how well the two methods do at estimating the true average vegetation height in two simulated environments (Dense with small plants, Sparse with big plants).
+
+First, we'll start building our graph by declaring our ggplot object (data and aesthetics) and setting a geometry type.
+```{r}
+base_graph <- ggplot(data=ht_data, aes(x=plot.average, y=aim.sum)) + geom_point()
+base_graph # Need to call this object to display it.
+```
+
+OK, that's a great start, but the two different simulations are al in there together. Let's try separating them by color by adding a color aesthetic.
+
+```{r}
+base_graph <- ggplot(data=ht_data, aes(x=plot.average, y=aim.sum, color=num.plants)) + geom_point()
+base_graph # Need to call this object to display it.
+```
+
+Yuck. That doesn't look good at all. What about if we put the two different simulations on adjacent plots? We can use __facets__ for that. ggplot has two faceting options: __facet_wrap__ for automatically wraping the individual graphs into your available space and __facet_grid__ for creating a defined matrix of graphs.
+
+```{r}
+faceted_graphs <- base_graph + facet_wrap(facets=~num.plants)
+faceted_graphs
+## Notice two things here:
+##  1. I didn't need to recreate the entire graph. I just called the base_graph object and added to it.
+##  2. For facet_wrap I had to tell it which variable to facet by and I had to use the ~ symbol to do it. The ~ symbol in R is used to denote a formula.
+
+```
+
+That looks better. Now let's add a 1:1 line and regression trend line to the graphs.
+```{r}
+trend_lines <- faceted_graphs + stat_smooth(method="lm",se=FALSE) +
+                geom_abline(slope=1,intercept=0)
+trend_lines
+```
+
+Not bad. But what about presenting the data as boxplots?
+
+```{r}
+boxplot_graphs <- ggplot(data=ht_data, aes(x=num.plants, y=aim.sum))+geom_boxplot()
+boxplot_graphs # Note this is just for one method. If we want/need to have the methods on the X axis (or as facets), we'll need to gather the data.
+```
+
+Hmm... That's not doing anything for me. What about if we looked at boxplots of how far the simulations are from actual? That's easy to do with ggplot!
+```{r}
+boxplot_graphs <- ggplot(data=ht_data, aes(x=num.plants, y=aim.sum-plot.average))+geom_boxplot() # Note the math in the aesthetic mapping.
+boxplot_graphs
+```
+

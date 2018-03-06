@@ -1,0 +1,20 @@
+---
+title: "Amy_ggplot_mapping_practice"
+author: "Amy Thorson"
+date: "3/6/2018"
+output: html_document
+---
+
+## Read in data
+
+```{r}
+SWEData <- read.csv(file="/Users/amythor86/Desktop/Practice Mapping/SWE_March.csv", header=TRUE, sep=",")
+names(SWEData) <- c("Year", "SWE_month", "SWE_mean")
+View(SWEData)
+library(ggplot2)
+str(SWEData)
+ggplot(SWEData, aes(x = Year, y = SWE_month)) + geom_point()
+```
+
+
+
