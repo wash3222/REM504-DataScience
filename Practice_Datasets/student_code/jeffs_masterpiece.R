@@ -1,4 +1,4 @@
-﻿#####Fig 1--> Conceptual stages and moisture profile
+#####Fig 1--> Conceptual stages and moisture profile
 
 a=read.csv(file.choose())
 
@@ -21,7 +21,7 @@ stages=c(1,2,3,4,5,1)
   axis(4,tck=.05,las=2,at=seq(0,40,10))
   mtext(side=1,text="Month",line=1.5)
   mtext(side=4,text="VWC (%) ",line=1.5)
-  text(a$t[length(a$t)*.005],22,labels="(b)",font=2)
+  text(a$t[1],28,labels="(b)",font=2,offset=-.2,pos=2)
   
   par(fig=c(0,1,.0,.37),mai=c(.5,.85,0,.85),mgp=c(3,.4,0),new=T)
   plot(a$p~a$t,t="n",lwd=1.89,axes=F,ylab="",xlab="",ylim=c(0,2.2),yaxs="i")
@@ -37,7 +37,7 @@ stages=c(1,2,3,4,5,1)
   axis(2,tck=.00,las=2,labels=F,at=seq(0,1.8,1.8))
   mtext(side=2,text="ΔC\n",line=1.5)
   segments(x0=a$t[index],x1=a$t[index],y0=c(0,0,0,0,0,0),y1=rep(1.6,6),lty=3,col=rgb(.4,.4,.4,.5))
-  text(a$t[length(a$t)*.005],1.5,labels="(a)",font=2)
+  text(a$t[1],1.72,labels="(a)",font=2,offset=-.2,pos=2)
   text(a$t[index],1.65,labels=stages,font=1)
   
   
