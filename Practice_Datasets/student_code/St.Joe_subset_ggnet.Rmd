@@ -34,7 +34,7 @@ Note that the `echo = FALSE` parameter was added to the code chunk to prevent pr
 ## Lets try this with the sub-setted St. Joe data 
 
 ```{r}
-setwd("~/Desktop/SESYNC-SNA modeling/Network/St.Joe-csv_files")
+setwd("~/Desktop/REM-504/GitHub/REM504-DataScience/Practice_Datasets/student_data")
 library(statnet)
 ```
 ## Read in the sub-setted St. Joe data
