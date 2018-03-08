@@ -2,6 +2,7 @@
 #
 # Script for practicing data import and export from R.
 
+
 ## Load the readxl library for working with Excel files
 library(readxl)
 

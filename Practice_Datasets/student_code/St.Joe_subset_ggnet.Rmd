@@ -1,0 +1,115 @@
+---
+title: "Subsetted St. Joe network"
+author: "Karen Trebitz"
+date: "3/7/2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+## Lets try this with the sub-setted St. Joe data 
+
+```{r}
+setwd("~/Desktop/SESYNC-SNA modeling/Network/St.Joe-csv_files")
+library(statnet)
+```
+## Read in the sub-setted St. Joe data
+It gives the short summary, including names of the edge attributes; "edges" are the contacts or connections between nodes or vertices ("actors" in sna literature).
+    Notice that there are "missing" edges --> NA in the matrix
+Then a basic plot of the network... nothing fancy
+    It just shows the root layer of directional contacts
+```{r}
+St.Joe.sub.dir.attr <- readRDS("St.Joe.sub.dir.attr.rds")
+St.Joe.sub.dir.attr
+  plot(St.Joe.sub.dir.attr, displaylabels=T)
+```
+ Network attributes:
+  vertices = 13 
+  directed = TRUE 
+  hyper = FALSE 
+  loops = FALSE 
+  multiple = FALSE 
+  bipartite = FALSE 
+  total edges= 48 
+    missing edges= 24 
+    non-missing edges= 24 
+
+ Vertex attribute names: 
+    vertex.names 
+
+ Edge attribute names: 
+    frequency new.exist p.exp p.fund p.info p.polit 
+    
+    
+
+
+ggnet is within the package GGally
+```{r}
+library(GGally)
+library(network)
+library(sna)
+library(ggplot2)
+```
+
+following examples in https://briatte.github.io/ggnet/ 
+``` {r}
+ggnet2(St.Joe.sub.dir.attr) 
+```
+
+
+## So that failed... Try again, with basic undirected table
+``` {r}
+setwd("~/Desktop/SESYNC-SNA modeling/Network/St.Joe-csv_files")
+library(statnet)
+library(GGally)
+library(ggplot2)
+
+contacts <- read.csv("St_Joe_contact.csv", header=T, sep = ",",  row.names=1,check.names=FALSE)
+head(contacts)
+sub.contacts <- contacts[1:8, 1:8]
+sub.contacts
+sub.net <- as.network.matrix(sub.contacts)
+sub.net
+plot(sub.net, displaylabels=T, main= "St. Joe subset, no attributes")
+
+
+```
+## Okay, now lets play in ggnet2
+```{r}
+set.seed(111)
+ggnet2(sub.net) # generic is all grey 
+ggnet2(sub.net, node.size = 6, node.color = "black", edge.size = 1, edge.color = "grey")
+ggnet2(sub.net, node.size = 12, label=T, edge.size = 1, edge.color = "grey")
+# How about sizing the nodes by degree? ="degree" is freeman
+ggnet2(sub.net, size = "degree", label=T, edge.size = .5, edge.color = 30)
+# in directed network could pass it "indegree" or "outdegree"
+# I so need to learn the color palettes
+
+```
+
+## Problem... apparently can't do it edge attributes... maybe that was the issue with the earlier error messages.  
+# Next learning curve, igraph
