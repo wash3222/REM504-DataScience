@@ -1,0 +1,273 @@
+---
+title: "Writing R Functions"
+output:
+  html_document:
+    df_print: paged
+---
+
+You'll often find yourself wanting to repeat a series of steps in R. While it is possible to copy/paste a chunk of code in your scripts and change small pieces of it to work with a new data set or produce slightly different results, you'd probably be better off turning that code into a flexible function that you can call whenever you need to. Each function is a series of small steps, wrapped up together and given a name, which means that if you can write a script, you already know almost everything you need to write a function.
+
+## The Basics
+
+Functions exist like other objects in R, and so you create them by assigning the output from __function()__ them to a name.
+
+```{r}
+# First, let's attach the tidyverse packages for later
+library(tidyverse)
+
+## The simplest function you can make, completely empty
+party <- function(){}
+
+## If you run just the name of the function, you can see what code it contains
+party
+
+## But if you call the function, R will run the contents
+party()
+
+```
+
+A completely empty function isn't much use, so let's add code to it. When creating a function, all the code that makes it up is put between the curly braces.
+
+```{r}
+## We'll have R create a string when the function is called
+party <- function(){
+  paste("PARTY", "HARD")
+}
+
+## And when that's run, R will execute the code!
+party()
+```
+
+Functions don't need to be reactive to the user. In the example of __party()__ above, we didn't tell it about any arguments and it doesn't need any external input to make the string because __paste()__ isn't looking for any named objects in the environment.
+
+
+## Reactivity
+
+Functions that don't take arguments have limited applications, which is why most functions take at least one argument. Generally, we write functions because we want to be able to predictably repeat the same steps with minor variations, so we need to be able to tell the function what to change when we call it.
+
+A function doesn't operate in the global environment though! Each function spins off its own environment every time it's called and runs all of its code in that environment. So, basically a pocket universe, Star Trek-style. The only things that a function brings into its environment are the values for its arguments. In the case of __rock.on()__, we can make it reactive so that it will take an argument for a name to paste it to the end of "PARTY HARD".
+```{r}
+## All the arguments for your function are listed like arguments to function() itself
+## Whatever values you provide for them will be the defaults
+rock.on <- function(name = "buddy"){
+  name.upper <- toupper(name)
+  paste("ROCK", "ON,", name.upper)
+}
+
+## So, running rock.on() without specifying anything for the name argument will use "buddy"
+rock.on()
+
+## But we could put anything that paste() can use there
+rock.on(name = "Irulan")
+```
+
+It's extremely important to remember that any named value/object you use in the body of the function either needs to be made within the function or come into the environment as an argument! You won't know that you've accidentally referenced something that isn't in the function environment until you try to run it and get an "object not found" error.
+
+## Outputs
+
+Functions can be complicated and involve a lot of intermediate objects, but we're rarely interested in anything except the final output. Luckily, functions don't just spit out everything they produce as they run. In the same way that arguments are the way to get values into a function's environment, we use __return()__ to get values back out.
+```{r}
+## A function for making a string either upper or lower case
+case.change <- function(string, new.case){
+  # switch() looks at the value of new.case and runs different code for "upper", "lower", and "both"
+  # For "both", it creates a vector of two named character strings
+  switch(new.case,
+         upper = {
+           output <- toupper(string)
+           },
+         lower = {
+           output <- tolower(string)
+           },
+         both = {
+           output <- c(upper = toupper(string),
+                       lower = tolower(string))
+         })
+}
+
+## In case.change() we create a new string called output, but when the function finishes and removes its environment, it takes that string with it
+case.change(string = "not so great", new.case = "upper")
+
+## What we need to do is add return()
+case.change <- function(string, new.case){
+  switch(new.case,
+         upper = {
+           output <- toupper(string)
+           },
+         lower = {
+           output <- tolower(string)
+           },
+         both = {
+           output <- c(upper = toupper(string),
+                       lower = tolower(string))
+         })
+  
+  return(output)
+}
+
+case.change(string = "much better", new.case = "upper")
+
+case.change(string = "much better", new.case = "both")
+```
+
+When your function calls __return()__, it stops running and returns whatever is provided to __return()__. If you had additional code after __return()__, your function doesn't care and won't execute it, so make sure that you only use __return()__ in a place in your code where you're ready to stop. You can always have more than one __return()__ call in a function though, if there are multiple possible endpoints in the code.
+
+## Error Handling
+
+Why should your functions have error handling built in? Why bother to have them fail gracefully? Because even you, the author, won't remember exactly what they're doing and how six months after you wrote them and it helps you to use them. Best practice is to never trust the user, but to help them to provide what's needed.
+
+There are three major ways to handle this: __message()__, __warning()__, and __stop()__.
+
+* __message()__ Produces a string in the console, letting the user know what's happening in the function as the code is executing.
+* __warning()__ Does the same thing, but the strings are classed slightly differently by R. It's intended to let users know that something might've gone wrong.
+* __stop()__ Also produces a string in the console, but brings the execution of the code to a stop. This is for when something is wrong enough to break things.
+
+Using __message()__ to report what step a function is on or what iteration through a loop can be really helpful for diagnosing what's going on when you're getting errors
+
+```{r}
+## Add together two numbers
+add <- function(number1, number2){
+  # It's important that they're numbers, so we'll stop and warn the user if they aren't
+  if (!is.numeric(number1)) {
+    stop("The value for number1 must be numeric!")
+  }
+  if (!is.numeric(number2)) {
+    stop("The value for number2 must be numeric!")
+  }
+  # Just an update to inform the user that the math is being done
+  message(paste0("Adding together ", number1, " and ", number2))
+  # Calculate the sum
+  result <- number1 + number2
+  # Return the result!
+  return(result)
+}
+
+add(2, 2)
+
+## Running this next line prevents rendering the notebook because it stops the code block from executing
+## But! That's working as intended and returns the message "The value for number2 must be numeric!"
+# add(2, "a")
+```
+
+## More Advanced Examples
+
+### Plotting
+If you need to create the same plot repeatedly with different data, write the plot code, then convert it to a function. That way, if you decide to change the appearance of all the plots, you only need to update the function code, not several copy/pasted instances of the plot code.
+
+```{r}
+plot.bar <- function(df, axis.x, variable.type, source){
+  # Make sure that all the arguments have the right kinds of values
+  if (!("data.frame" %in% class(df))) {
+    stop("The value of df must be a data frame")
+  }
+  if (!is.character(axis.x)) {
+    stop("The value for axis.x must be a character string corresponding to a variable in the dataframe")
+  } else if (!(axis.x %in% names(df))) {
+    stop("The value for axis.x must be a character string corresponding to a variable in the dataframe")
+  }
+  
+  # Build the plot
+  output <- ggplot(data = df) +
+    geom_bar(aes_string(x = axis.x,
+                        fill = axis.x)) +
+    labs(title = paste("Frequency of",
+                       str_to_title(gsub(axis.x, pattern = "_", replacement = " ")),
+                       "as", str_to_title(variable.type),
+                       "in", str_to_title(source)),
+         fill = str_to_title(gsub(axis.x, pattern = "_", replacement = " "))) +
+    theme(axis.text.x = element_blank())
+  
+  # Return the plot
+  return(output)
+}
+
+## dplyr has a dataset called Star Wars we can use here
+plot.bar(df = starwars,
+         axis.x = "species",
+         variable.type = "character trait",
+         source = "Star Wars")
+
+plot.bar(df = starwars,
+         axis.x = "homeworld",
+         variable.type = "character trait",
+         source = "Star Wars")
+```
+
+### Conversion
+This particular function was written to help automate text summaries of monitoring data by converting numeric values to nominal equivalents. 
+
+```{r}
+## Convert numeric to nominal
+num2nom <- function(number,
+                    capitalize = FALSE) {
+  # Set the constants to work with
+  ones <- c("one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
+  tens <- c("ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety")
+  exceptions <- c("0" = "zero",
+                  "11" = "eleven",
+                  "12" = "twelve",
+                  "13" = "thirteen",
+                  "14" = "fourteen",
+                  "15" = "fifteen",
+                  "16" = "sixteen",
+                  "17" = "seventeen",
+                  "18" = "eighteen",
+                  "19" = "nineteen")
+  
+  # This won't work with longer numbers as written
+  if (nchar(number) > 2) {
+    stop("Sorry, this can handle only one and two digit numbers right now.")
+  }
+  
+  # If it's a special case, grab that from exceptions and use it as the output
+  if (as.character(number) %in% names(exceptions)) {
+    output <- unname(exceptions[as.character(number)])
+    # Otherwise, if it's single digit, use that lookup vector
+  } else if (nchar(number) == 1) {
+    output <- ones[number]
+    # Otherwise
+  } else if (nchar(number) == 2) {
+    # If the number doesn't end in a 0
+    if (substr(number, 2, 2) != "0") {
+      # Get the appropriate tens word and paste it to the appropriate ones word, separated by -
+      output <- paste(tens[as.numeric(substr(number, 1, 1))], ones[as.numeric(substr(number, 2, 2))], sep = "-")
+    } else {
+      # Otherwise just get the tens word
+      output <- tens[as.numeric(substr(number, 1, 1))]
+    }
+  }
+  # Capitalize the first character if appropriate
+  if (capitalize) {
+    substr(output, 1, 1) <- toupper(substr(output, 1, 1))
+  }
+  # Return the new string
+  return(output)
+}
+
+## Numbers to convert
+the.numbers <- c(4, 8, 15, 16, 23, 42)
+
+## Create an empty vector to store some number names in
+number.names <- c()
+## Loop over the numbers
+for (number in the.numbers) {
+  number.names <- c(number.names, num2nom(number))
+}
+number.names
+
+## Same thing without looping
+number.names <- lapply(the.numbers, num2nom) %>% unlist()
+number.names
+```
+
+## Helpful Tips
+
+* It's most common to work out code as a script first. It's easy enough to make functions out of stretches of code after you've confirmed that they work as intended.
+* Don't skip out on the input sanitization and formatting checks! You *will* pay for it later.
+* Try to keep functions concise. If you have a function that's doing several different things, consider breaking the steps out into their own functions that can be called in a larger one.
+* Keep things predictable! For example, don't just convert all strings to factors in the output data frame even if you think you and everyone who uses the function will want that--make it an argument that defaults to TRUE so that it's clear what's happening and it's optional.
+* DOCUMENT EVERYTHING. Comment your code within the function, but be sure to also describe what the function is for and what the arguments mean.
+
+
+[DataCamp "Writing Functions in R"](https://www.datacamp.com/courses/writing-functions-in-r)
+
+
