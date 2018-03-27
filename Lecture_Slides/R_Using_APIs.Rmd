@@ -1,0 +1,114 @@
+---
+title: "R Accessing Data through APIs"
+output: html_notebook
+---
+
+Like everything in R, there are multiple ways to access data via APIs. Below are several examples that illustrate different services as well as different approaches/packages for data access.
+
+## Accessing spatial data for points
+A common task in ecological research is to get some spatial attribute like elevation or soil unit for a handful of points. This can be a real drag if you have to find, download, and assemble all of the base datasets before you can retrieve the attribute of interest. APIs are a good solution for this case. You can pass point locations to the API and return the data values. Two examples below are querying USGS National Elevation Dataset DEMs. The USGS API is "documented" [here, really sucky documentation](http://ned.usgs.gov/epqs/).
+
+1. Here's the basic structure of the API call with a fixed query (XML result)
+```{r}
+library(dplyr)
+library(xml2)
+library(httr)
+library(ggplot2)
+
+elev.response <- GET("http://ned.usgs.gov/epqs/pqs.php?x=-123.45&y=44.56&units=Meters&output=xml")
+response.code <- status_code(elev.response)
+elev.xml.string <- content(elev.response, "text")
+elev.xml <- read_xml(elev.xml)
+elev <- xml_find_all(elev.xml, "//Elevation") %>% xml_text() %>% as.numeric()
+print(elev)
+```
+
+2. Well, that's a start. It definitely works. Now let's get the values for a set of points.
+```{r}
+# Load in a CSV file of Cow GPS locations (Exciting!)
+cow.locs <- read.csv("C:\\Users\\Jason Karl\\Documents\\GitHub\\REM504-DataScience\\Practice_Datasets\\Cow_14_GPS_July_2017.csv", header=T, stringsAsFactors = F)
+
+# This dataset is really big (and messy), let's just grab 20 rows
+cow.locs <- cow.locs %>% sample_n(20)
+plot(cow.locs$Latitude, cow.locs$Longitude)
+
+# Ok, now let's iterate over the rows to get the elevation values for each point
+cow.elevations <- data.frame() # Empty data frame to hold the results
+for (i in 1:nrow(cow.locs)) {
+  row <- cow.locs[i,]
+  lat <- row$Latitude
+  lon <- row$Longitude
+  query.string <- paste("http://ned.usgs.gov/epqs/pqs.php?x=",lon,"&y=",lat,"&units=Meters&output=xml",sep="")
+  elev.response <- GET(query.string)
+  if (status_code(elev.response)==200){
+    elev.xml <- content(elev.response, "text") %>% read_xml
+    elev <- xml_find_all(elev.xml, "//Elevation") %>% xml_text() %>% as.numeric()
+    cow.elevations <- rbind(cow.elevations, data.frame("Index"=row$Index, 
+                                                       "Date"=row$Date,
+                                                       "Time"=row$Time,
+                                                       "Latitude"=row$Latitude,
+                                                       "Longitude"=row$Longitude,
+                                                       "EHPE"=row$EHPE,
+                                                       "GPS.Altitude"=row$Altitude,
+                                                       "NED.elev"=elev))
+  }
+  Sys.sleep(0.5)
+}
+
+# Cool. It worked. Let's look at the difference between the GPS-recorded elevations and the NED 1/3-arc-second elevations.
+ggplot(data=cow.elevations, aes(x=NED.elev, y=GPS.Altitude, color=EHPE))+geom_point()+geom_smooth(method="lm")
+```
+
+3. Of course, there's a library that pulls elevation data for you easily.
+```{r}
+library(elevatr)
+cow.prep <- cow.locs %>% select("Longitude","Latitude","Index","Date","Time","Altitude","EHPE")
+prj_dd <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
+cow.elevatr <- get_elev_point(cow.prep, prj=prj_dd, src="epqs") #Returns a SpatialPointsDataFrame
+cow.elevatr@data
+```
+
+## Accessing biodiversity records from GBIF
+The Global Biodiversity Information Facility (GBIF) maintains a global biodiversity database of species occurrence records. You can query their API for things like locations of a species. They have pretty good API documentation that can be found at https://www.gbif.org/developer/summary.
+
+Let's grab the occurrence records for _Clarkia pulchella_, large-flower Clarkia, a plant first discovered on the Lewis & Clark expidition near Kamiah, Idaho ([Wikipedia Page](https://en.wikipedia.org/wiki/Clarkia_pulchella)). We'll make a map of the occurrence records. This example will illustrate an approach to pagination.
+```{r}
+library(jsonlite)
+library(ggmap)
+
+# First we'll need to see how many records we're dealing with.
+request.string = "http://api.gbif.org/v1/occurrence/search?scientificName=Clarkia%20pulchella&limit=100"
+gbif.request <- GET(request.string)
+if (status_code(gbif.request)==200) {
+  gbif.json <- gbif.request %>% content("text") %>% fromJSON(simplifyDataFrame = T)
+}
+n <- gbif.json$count # This is the number of records. We set a limit of 100 records per page, so we'll need to loop 7 times.
+iters <- n %/% 100
+
+gbif.data <- data.frame() # we already have the first set of records. Let's save that and go to the next set.
+for (offset in seq(0,100*iters,by=100)) {  ## Now, call the API again but offsetting by a different amount each time.
+  gbif.request <- GET(paste(request.string,"&offset=",offset,sep=""))
+  if (status_code(gbif.request)==200) {
+    gbif.json <- gbif.request %>% content("text") %>% fromJSON()
+    gbif.data <- rbind(gbif.data,data.frame(lat=as.numeric(gbif.json$results$decimalLatitude),lon=as.numeric(gbif.json$results$decimalLongitude))) # Assemble the dataset as we go.
+  }
+  Sys.sleep(1)
+}
+
+## Some records don't have a lat/lon coordinate. Others have more than one coordinate. Let's clean up.
+gbif.data.clean <- gbif.data[!is.na(gbif.data$lat),]
+gbif.data.clean <- gbif.data %>% filter(lon < 0 & lat > 0)
+
+## Now let's make the map!
+bbox <- make_bbox(lon=gbif.data.clean$lon, lat=gbif.data.clean$lat, f=0.1) # ggmap function to make a bounding box to set map extent
+map <- get_map(location=bbox, maptype = "hybrid", source = "google", zoom=6)
+ggmap(map) + geom_point(data=gbif.data.clean, color="red")
+```
+
+## Some useful resources
+- [Getting started with httr guide](https://cran.r-project.org/web/packages/httr/vignettes/quickstart.html)
+- [Fetching JSON data from Rest APIs](https://cran.r-project.org/web/packages/jsonlite/vignettes/json-apis.html) - examples of different API and authentication formats.
+- [accessing RESTful APIs using R](https://www.programmableweb.com/news/how-to-access-any-restful-api-using-r-language/how-to/2017/07/21)
+
+
+
