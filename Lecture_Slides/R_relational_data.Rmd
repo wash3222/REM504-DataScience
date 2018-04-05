@@ -1,0 +1,77 @@
+---
+title: "Relational Data in R"
+output: html_notebook
+---
+
+Working with relational data in R is pretty easy, but not necessarily intuitive. Most of the query (SELECT), sort (ORDER BY) and summarization (GROUP BY) functions can be handled easily in R using base functions or functions from packages like dplyr. But, there are few base functions for doing table joins based on shared fields. However, two packages make it pretty simple. The __sqldf__ package lets you issue standard SQL queries within R. The __dplyr__ package has some pre-packaged SQL-like functions that are also very useful for joining tables.
+
+Let's look at some basic options for joining related tables in R. We're going to work with some data from the DIMA database because it has a very detailed (overly-complex?) relational structure. For this example, let's calculate a species list and count for each plot based on the recorded Line-point Intercept (LPI) data.
+
+```{r}
+## Load our packages
+library(dplyr)
+library(tidyr)
+library(sqldf)
+
+## Load some data to play with.
+path <- "C:\\Users\\Jason Karl\\Documents\\GitHub\\REM504-DataScience\\Practice_Datasets\\relational_data"
+tblSpecies <- read.csv(paste(path,"tblSpecies.csv",sep='\\'),header=T,stringsAsFactors=F)
+tblPlots <- read.csv(paste(path,"tblPlots.csv",sep='\\'),header=T,stringsAsFactors=F)
+tblLines <- read.csv(paste(path,"tblLines.csv",sep='\\'),header=T,stringsAsFactors=F)
+tblLPIHeader <- read.csv(paste(path,"tblLPIHeader.csv",sep='\\'),header=T,stringsAsFactors=F)
+tblLPIDetail <- read.csv(paste(path,"tblLPIDetail.csv",sep='\\'),header=T,stringsAsFactors=F)
+
+  
+```
+DIMA has a structure where a plot can consist of multiple lines (transects) and each transect can have multiple observation sets associated with it. So first we need to join the plot and line info into the LPI records in tblLPIHeader.
+
+```{r}
+# Join plot info into the lines table
+plotLines <- tblLines %>% left_join(tblPlots, by="PlotKey")
+
+## Or via sqldf which makes it easier to get just the fields we want.
+plotLines <- sqldf('SELECT tblLines.LineKey, tblPlots.PlotID FROM tblLines LEFT JOIN tblPlots ON tblLines.PlotKey = tblPlots.PlotKey')
+
+# Now join that into the LPI Header table
+LPIlineplot <- tblLPIHeader %>% left_join(plotLines, by="LineKey")
+head(LPIlineplot)
+
+## Great. That gives us our plotIDs for each set of LPI observations.
+```
+
+
+The tblLPIDetails field is where all the fine-grained observation data for LPI are stored. Observations from the different layers are stored in different fields, so first order of business is to strip out the fields we don't need and convert that to a long form.
+
+```{r}
+tblLPIDetailLong <- tblLPIDetail %>%
+  select("RecKey","TopCanopy","Lower1","Lower2","Lower3","Lower4","SoilSurface") %>%
+  gather(RecKey)
+names(tblLPIDetailLong)<-c("RecKey","Field","SppCode")
+head(tblLPIDetailLong)
+
+## Next summarize to get the list of species per RecKey
+tblLPIDetailSpp <- tblLPIDetailLong %>% group_by(RecKey,SppCode) %>% summarise(n=n())
+head(tblLPIDetailSpp)
+
+## This gives us our species list (messy) for each set of LPI observations
+
+## Now let's clean up this list to only those that occur in the master species list and add the species names into it using dplyr
+tblLPISpp <- tblLPIDetailSpp %>% inner_join(tblSpecies, by=c("SppCode"="SpeciesCode"))
+```
+
+OK, now we have our data prepped, let's join the line info into the LPI species and then calculate our summaries.
+
+```{r}
+
+# This gives us our list of species by plot.
+LineSpecies <- sqldf('SELECT LPIlineplot.PlotID, tblLPISpp.ScientificName FROM tblLPISpp LEFT JOIN LPIlineplot ON tblLPISpp.RecKey=LPIlineplot.RecKey')
+head(LineSpecies,n=50)
+
+# Summarise this by PlotID and count number of species in each plot.
+PlotSppCount <- LineSpecies %>% group_by(PlotID) %>% summarise(sppCount=n())
+head(PlotSppCount, n=20)
+```
+
+
+
+

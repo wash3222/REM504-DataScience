@@ -18,7 +18,7 @@ library(ggplot2)
 elev.response <- GET("http://ned.usgs.gov/epqs/pqs.php?x=-123.45&y=44.56&units=Meters&output=xml")
 response.code <- status_code(elev.response)
 elev.xml.string <- content(elev.response, "text")
-elev.xml <- read_xml(elev.xml)
+elev.xml <- read_xml(elev.xml.string)
 elev <- xml_find_all(elev.xml, "//Elevation") %>% xml_text() %>% as.numeric()
 print(elev)
 ```
@@ -97,7 +97,7 @@ for (offset in seq(0,100*iters,by=100)) {  ## Now, call the API again but offset
 
 ## Some records don't have a lat/lon coordinate. Others have more than one coordinate. Let's clean up.
 gbif.data.clean <- gbif.data[!is.na(gbif.data$lat),]
-gbif.data.clean <- gbif.data %>% filter(lon < 0 & lat > 0)
+gbif.data.clean <- gbif.data.clean %>% filter(lon < -110 & lat > 0)
 
 ## Now let's make the map!
 bbox <- make_bbox(lon=gbif.data.clean$lon, lat=gbif.data.clean$lat, f=0.1) # ggmap function to make a bounding box to set map extent
