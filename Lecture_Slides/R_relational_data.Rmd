@@ -30,6 +30,7 @@ DIMA has a structure where a plot can consist of multiple lines (transects) and 
 plotLines <- tblLines %>% left_join(tblPlots, by="PlotKey")
 
 ## Or via sqldf which makes it easier to get just the fields we want.
+#### NOTE: Don't use periods in object names if you're using sqldf. 
 plotLines <- sqldf('SELECT tblLines.LineKey, tblPlots.PlotID FROM tblLines LEFT JOIN tblPlots ON tblLines.PlotKey = tblPlots.PlotKey')
 
 # Now join that into the LPI Header table
