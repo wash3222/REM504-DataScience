@@ -12,13 +12,13 @@ library(ggplot2)
 library(rgdal)
 library(dplyr)
 
-# Define UI for application that draws a histogram
+# Define UI for application that draws a scatterplot
 ui <- fluidPage(
    
    # Application title
    titlePanel("Plot of GPS Collar Test Data"),
    
-   # Sidebar with a slider input for number of bins 
+   # Sidebar with a slider input for confidence ellipse width
    sidebarLayout(
       sidebarPanel(
         fileInput("csvfile", "Choose CSV File",
@@ -33,20 +33,21 @@ ui <- fluidPage(
                      value = 90)
       ),
       
-      # Show a plot of the generated distribution
+      # Show a plot of the GPS data
       mainPanel(
          plotOutput("gpsPlot")
       )
    )
 )
 
-# Define server logic required to draw a histogram
+# Define server logic required to draw scatterplot
 server <- function(input, output) {
   
    output$gpsPlot <- renderPlot({
       
+      # Get the uploaded file name
       csvfile <- input$csvfile 
-      if (is.null(csvfile))
+      if (is.null(csvfile)) # Avoid error before we have a file uploaded.
         return(NULL)
      
       # load the data
@@ -67,6 +68,7 @@ server <- function(input, output) {
       gps.data.u11$diffLon <- meanLon - gps.data.u11$Lon
       gps.data.u11$diffdist <- sqrt(gps.data.u11$diffLat^2+gps.data.u11$diffLon^2)
       
+      # Plot the data
       plot.df <- data.frame(gps.data.u11)
       g <- ggplot(data=plot.df, aes(x=diffLon,y=diffLat,color=HDOP))+geom_point() +
         scale_color_gradient2(low="#006837", mid="#fee08b", high="#a50026", midpoint=200) +
