@@ -11,7 +11,7 @@ You'll often find yourself wanting to repeat a series of steps in R. While it is
 
 Functions exist like other objects in R, and so you create them by assigning the output from __function()__ them to a name.
 
-```{r}
+```{r, warning=FALSE}
 # First, let's attach the tidyverse packages for later
 library(tidyverse)
 
