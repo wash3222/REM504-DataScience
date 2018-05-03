@@ -1,0 +1,81 @@
+---
+title: "Parallel Processing and Big Data in RParallel Processing and Big Data in R"
+output: html_notebook
+---
+
+We'll wrap up our class this semester talking a bit about how to work with big datasets and big analyses in R. The title here is a bit of a bait and switch. We're not really going to talk about Big Data (_insert Big Data rant here_). Instead, we'll talk about how to deal with things like the advantages of parallel processing and how to do it, memory limitations in R and how to deal with them, and alternative R implementations for maximizing performance.
+
+## Parallel Processing
+Parallel processing is basically just what it sounds like - running your code in parallel over a bunch of different computers (or processors) at the same time. Parallel processing lends itself well to analyses that need to iterate over a set of objects. So simulations where you need to run the same thing thousands (or millions) of times, or spatial analyses that you can break up into tiles are examples of situations where parallelization could be useful. 
+
+#### Application threads (simplified!)
+To understand why parallelization is important, we need to cover a bit of how applications like R work. The smallest executable piece of a program is called a thread. Most applications are "single threaded" - meaning that they can execute only one thing at a time. R is single threaded - i.e., when it's busy doing something, you have to wait for it to be done before you can do anything else. Single threaded applications occupy a single processor (or core) in your computer (_Note that a single processor can hold many threads, but a single thread can only be on one processor_). Before multi-processor (core) computers, executing a huge/taxing command would bring your entire machine to its knees until that process was done. Parallelization basically opens up the application to being multi-threaded - i.e., allowing it to access more than one processor/core. The performance advantages you will see from parallelization directly relate to how many threads you can establish - meaning how many processors/cores you have available.
+
+#### Implementing parallel processing
+In the "olden days" we used to manually chunk up our code and then occupy an entire computer lab on the weekend and set different parts of our code running on as many machines as we could get our hands on. With multi-core processors and parallelization packages in R, it's now pretty easy. 
+
+One of the easiest parallelization packages to use in R is __snowfall__ (Simple Network Of Workstations).  
+
+```{r}
+library(snowfall)
+
+## OK, let's start with a reasonably big 10 million random numbers and do something with it via Snowfall
+x <- runif(10^7,1,10)
+
+## First start the snowfall parallelization
+sfInit(parallel=FALSE, cpus=20) # setting parallel to FALSE basically makes it the same as running in regular R.
+if( sfParallel() ) {
+  cat( "Running in parallel mode on", sfCpus(), "nodes.\n" )
+} else {
+  cat( "Running in sequential mode.\n" )
+}
+
+## Because we'll be spawning multiple threads, we need to tell snowfall which objects
+##   and packages each thread will need. We do that via Exports
+sfExport("x")
+#sfLibrary(raster)  ## Load libraries, but we don't need them here
+
+## Now we run our code in parallel!
+start <- Sys.time()
+y <- sfLapply(x,log10)
+end <- Sys.time()
+print(end-start)
+
+## Turn the parallelization off
+sfStop()
+```
+
+For simple jobs/analyses, there is no advantage to running parallelization (in fact there can be a performance decrease) because of the overhead of setting up the parallel threads and collating the results. As jobs/analyses become more complex, though, the advantages of parallelization before more pronounced.
+
+## Memory management in R
+In most cases, R holds all of its objects in memory (look at Windows Task Manager). There can be some important implications of this for large or complex analyses. The 32-bit version of R can only address a maximum of 2GB of memory, so encountering "Out of Memory" errors was common. The 64-bit version of R can address as much memory as you have on your machine. This makes larger analyses possible, but still tricky in some cases. 
+
+For super-large datasets or analyses/simulations, there are a few things you can do to manage memory if you're running into out of memory problems:
+
+1. remove unnecessary or unused objects. If you don't need an intermediate object, remove/delete it (using rm() ) to free up memory. R Studio shows you how much memory an object is using.
+
+2. Save unneeded objects that you don't want to delete to the hard drive. You can save it to an .Rdata file if it took a long time to create and you might want it back. Example, the BLM master sample of 6.7 million points took about 5 days to create as a set of spatially-balanced random points. Keeping this in memory really bogs things down. Importing it from a shapefile or geodatabase every time takes +5 minutes, but reading it from a .Rdata file takes about 30 seconds. Workflow is: read the master sample points in from .Rdata file, select out region of interest, remove full master sample points object, ...
+
+3. Use a machine with more memory!!
+
+4. Task portions of your analysis out to other compiled languages like C++, Java, Python. Many packages take advantage of this through rJava or Rcpp.
+
+5. Use an alternative implementation of R that has better memory managment. There are different implementations of R written in Java or C++ that offer the ability to have some aspects of R memory and objects written to disk as well as held in memory. Some examples of these are pqR (pretty-quick R, C++ implementation) and Renjin (Java implementation). Generally you need to do some tweaking of these implementations to maximize their performance, and packages need to be specifically compiled for these implementations, but if you're stuck with your analysis because of memory limitations, these might be good options.
+
+6. Use a different programming language! R isn't the only thing out there. For some things, Python, MatLab, IDL, C++, Java may just work better.
+
+```{r}
+## Example of benchmarking GNU R versus Renjin
+
+# For the purposes of benchmarking, let's create a vector of a billion random numbers.
+# That will give R something to chew on and will allow us to see the speed differences
+# between plain-old R and the alternative implementation Renjin
+
+start <- Sys.time()
+x <- rnorm(10^9)
+end <- Sys.time()
+elapsed<-end-start
+print(elapsed)
+
+```
+

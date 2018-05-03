@@ -1,0 +1,261 @@
+---
+title: "Raster Time-Series"
+output:
+  html_notebook: default
+  word_document: default
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+
+This tutorial covers how to work with and plot raster time series data. The code and example datasets in this notebook were adapted from [NEON](http://www.neonscience.org/raster-time-series) data tutorials. It also covers practical assessment of data quality in remote sensing derived imagery.
+
+##Downloading Landsat Imagery
+For this tutorial we'll use a new GEE based web app for aquiring Landsat composit imagery (i.e., LS 5-8).
+The web app is found [here](https://ndvi.ntsg.umt.edu/).
+See the associated paper for an in depth description of processing method: [Robinson et al. 2017](http://www.mdpi.com/2072-4292/9/8/863)
+
+##R Code
+Install packages if not already installed
+```{r}
+# 
+required.packages <- c("raster", "rgdal", "rasterVis", "ggplot2", "MODIS", "zoo", "imputeTS", "signal")
+new.packages <- required.packages[!(required.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+lapply(required.packages, require, character.only=T)
+rm(required.packages, new.packages)
+```
+
+Set working directory to ensure R can find the file we wish to import
+```{r}
+setwd("D:/EPA_Data/Master_File/Work_Files/Teaching/DataClass_TimeSeries")
+```
+
+##Working with NDVI Timeseries from southern NM
+
+Create list of NDVI file paths
+```{r}
+IBPE_NDVI_path <- paste0(getwd(), "/IBPE") 
+all_NDVI_IBPE <- list.files(IBPE_NDVI_path,
+                            full.names = TRUE,
+                            pattern = ".tif$")
+# view list - note the full path, relative to our working directory, is included
+print(all_NDVI_IBPE)
+```
+use gdalinfo to examine one of the geotiffs
+```{r}
+GDALinfo(all_NDVI_IBPE[1])
+```
+
+Now we have a list of all GeoTIFF files in the NDVI directory for IBPE site. Next, we will create a Rasterbrick from this list using the brick() function.
+
+```{r}
+# Create a raster brick of the NDVI time series
+NDVI_IBPE_brick <- brick(stack(all_NDVI_IBPE, bands=1))
+NDVI_QA_IBPE_brick <-  brick(stack(all_NDVI_IBPE, bands=2))
+```
+
+We can explore the GeoTIFF tags (the embedded metadata) in a brick using the same syntax that we used on single-band raster objects in R including: crs() (coordinate reference system), extent() and res() (resolution; specifically yres() and xres()).
+```{r}
+## ----explore-Rasterbrick-tags--------------------------------------------
+# view crs of rasters
+crs(NDVI_IBPE_brick)
+
+# view extent of rasters in brick
+extent(NDVI_IBPE_brick)
+
+# view the resolution of our rasters
+res(NDVI_IBPE_brick)
+```
+
+Data are scaled by 100. 
+```{r}
+NDVI_IBPE_brick <- NDVI_IBPE_brick/100
+plot(NDVI_IBPE_brick[[1:12]], zlim=c(.06, .19), nc=4)
+```
+
+
+##LS QA
+The quality band has the following values:
+10: Pixel composite excludes clouds, cloud shadow, water, and snow
+11: Pixel composite excludes clouds, cloud shadow, water, and snow; and is smoothed
+20: Pixel composite excludes clouds and cloud shadow, but includes water and snow
+21: Pixel composite excludes clouds and cloud shadow, but includes water and snow; and is smoothed
+30: Pixel is filled with the user specified climatology
+31: Pixel is filled with the user specified climatology; and is smoothed
+255: No data
+
+```{r}
+plot(NDVI_QA_IBPE_brick[[1:12]])
+```
+
+
+
+```{r}
+# using projectExtent (no values are transferred)
+NDVI_IBPE_newproj <- projectExtent(NDVI_IBPE_brick,  "+proj=utm +zone=13 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
+# Adjust the cell size 
+res(NDVI_IBPE_newproj) <- 30
+# now project
+NDVI_IBPE_brick_proj <- projectRaster(NDVI_IBPE_brick, NDVI_IBPE_newproj)
+NDVI_QA_IBPE_brick_proj <- projectRaster(NDVI_QA_IBPE_brick, NDVI_IBPE_newproj)
+```
+
+
+```{r}
+## ----explore-Rasterbrick-tags--------------------------------------------
+# view crs of rasters
+crs(NDVI_IBPE_brick_proj)
+
+# view extent of rasters in brick
+extent(NDVI_IBPE_brick_proj)
+
+# view the resolution of our rasters
+res(NDVI_IBPE_brick_proj)
+```
+
+In the above exercise, we viewed plots of our NDVI time series and noticed a few images seem to be unusually light. However this was only a visual representation of potential issues in our data. Next we will use histograms to explore the distribution of NDVI values stored in each raster. 
+
+```{r}
+# create histograms of each raster
+hist(NDVI_IBPE_brick_proj[[1:12]], 
+     xlim = c(0, .4))
+hist(NDVI_IBPE_brick_proj[[13:24]], 
+     xlim = c(0, .4))
+hist(NDVI_IBPE_brick_proj[[25:36]], 
+     xlim = c(0, .4))
+hist(NDVI_IBPE_brick_proj[[37:46]], 
+     xlim = c(0, .4))
+```
+
+
+
+##Extracting date information
+
+Print the basename of the first file to examine naming structure
+```{r}
+print(basename(all_NDVI_IBPE[1]))
+```
+
+
+The 'orgTime' function from the MODIS package lets you define the period to be filtered, the output temporal resolution, and select the required data from your input 'files'.
+```{r}
+date.org <- orgTime(all_NDVI_IBPE,nDays=16, begin="2009001", pillow=0, pos1=19,pos2=25)
+print(date.org)
+```
+
+Select correct dates and assign date to each layer in the raster brick
+```{r}
+#Extract the formated input dates
+ibpe.ls.dates <- date.org$inputLayerDates
+#add timestamp to raster brick
+NDVI_IBPE_brick_proj <- setZ(x = NDVI_IBPE_brick_proj, z = ibpe.ls.dates, 'date')
+NDVI_QA_IBPE_brick_proj <- setZ(x = NDVI_QA_IBPE_brick_proj, z = ibpe.ls.dates, 'date')
+```
+
+
+Here we will us both the zoo and raster packages to process our time-series raster stack
+
+Create quartly NDVI averages
+```{r}
+NDVI_IBPE_yearqrt <- zApply(NDVI_IBPE_brick_proj, by=as.yearqtr, fun=mean, name='quarters')
+#plot avg quarterly values
+plot(NDVI_IBPE_yearqrt)
+```
+
+Create monthly NDVI averages
+```{r}
+NDVI_IBPE_yearmon <- zApply(NDVI_IBPE_brick_proj, by=as.yearmon, fun=mean, name='months')
+#plot avg monthly values in 2009
+plot(NDVI_IBPE_yearmon[[1:12]])
+```
+
+We can use the rasterVis package for plotting
+```{r}
+cols <- colorRampPalette(brewer.pal(9,"YlGn"))
+levelplot(NDVI_IBPE_yearmon,
+          layout=c(4, 3), # create a 4x4 layout for the data
+          col.regions=cols, # add a color ramp
+          main="Landsat NDVI Monthly Average")
+```
+
+Now we will load in some points to extract timeseries from the raster brick
+```{r}
+points <- readOGR("D:/EPA_Data/Master_File/Work_Files/Teaching/DataClass_TimeSeries", "IBPE_Points")
+ts.points <- extract(NDVI_IBPE_brick_proj, points)
+plot(NDVI_IBPE_brick_proj[[1]])
+points(points, pch=16)
+```
+
+#Based on areas on highest temporal variability we will select two points to evaluate
+```{r}
+plot(NDVI_IBPE_brick_proj[[15]])
+points(points[1,], pch=16, col="red")
+points(points[5,], pch=16, col="blue")
+```
+
+Here we plot and compare the points
+```{r}
+p1 <- zoo(ts.points[1,],ibpe.ls.dates)
+autoplot.zoo(p1)
+p5 <- zoo(ts.points[5,],ibpe.ls.dates)
+autoplot.zoo(p5)
+```
+
+Lets dig further into the QA data
+##LS QA
+The quality band has the following values:
+10: Pixel composite excludes clouds, cloud shadow, water, and snow
+11: Pixel composite excludes clouds, cloud shadow, water, and snow; and is smoothed
+20: Pixel composite excludes clouds and cloud shadow, but includes water and snow
+21: Pixel composite excludes clouds and cloud shadow, but includes water and snow; and is smoothed
+30: Pixel is filled with the user specified climatology
+31: Pixel is filled with the user specified climatology; and is smoothed
+255: No data
+
+```{r}
+ts.qa.points <- extract(NDVI_QA_IBPE_brick_proj, points)
+p1.qa <- zoo(ts.qa.points[1,],ibpe.ls.dates)
+autoplot.zoo(p1.qa)
+p5.qa <- zoo(ts.qa.points[5,],ibpe.ls.dates)
+autoplot.zoo(p5.qa)
+```
+
+```{r}
+p1_int <- p1
+p5_int <- p5
+```
+
+```{r}
+p1[p1.qa==30] <- NA
+#Note: for some reason p5.qa is not returning values == 30. p1 and p5 have the same QA so I used p1 to select infilled values for p5.
+p5[p1.qa==30] <- NA
+autoplot.zoo(p1)
+autoplot.zoo(p5)
+```
+
+The zoo and imputeTS packages has several functions for interpolating missing values in a timeseries
+```{r}
+#Zoo package
+p1.napprox <- na.approx(p1)
+p1.naspline <- na.spline(p1)
+
+#imputeTS package
+p1.linear <-zoo(na.interpolation(as.numeric(p1), option = "linear"),ibpe.ls.dates)
+p1.spline <-zoo(na.interpolation(as.numeric(p1), option = "spline"),ibpe.ls.dates)
+p1.stine <-zoo(na.interpolation(as.numeric(p1), option = "stine"),ibpe.ls.dates)
+
+autoplot.zoo(p1)
+autoplot.zoo(p1.napprox)
+autoplot.zoo(p1.naspline)
+autoplot.zoo(p1.linear)
+autoplot.zoo(p1.spline)
+autoplot.zoo(p1.stine)
+autoplot.zoo(p1_int)
+```
+
+```{r}
+save.image(paste0(getwd(), "/DataClass_TimeSeries.RData"))
+```
+
