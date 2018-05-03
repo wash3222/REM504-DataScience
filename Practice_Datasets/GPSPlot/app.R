@@ -50,6 +50,7 @@ server <- function(input, output) {
       if (is.null(csvfile)) # Avoid error before we have a file uploaded.
         return(NULL)
      
+      print(csvfile$datapath)
       # load the data
       gps.data <- read.csv(csvfile$datapath, header=T, stringsAsFactors = F) 
       
