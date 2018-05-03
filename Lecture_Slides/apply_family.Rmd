@@ -1,0 +1,167 @@
+---
+title: "The apply() Family"
+output:
+  html_document:
+    df_print: paged
+---
+```{r echo=FALSE}
+dogs.df <- read.csv("C:/Users/Nelson/Documents/Projects/GitHub/REM504-DataScience/Lecture_Slides/dogs_of_nyc.csv", stringsAsFactors = FALSE)
+```
+
+When working with data, you'll often want to repeat the same task over and over. You could write a loop, which is a good, workable solution! But the apply() functions cover some special cases and, in the case of sapply() and lapply() can be faster than a loop.
+
+## The Basics
+
+There're four functions in the family that you're likely to use (although there are a few others as well) at some point:
+
+* apply()
+* lapply()
+* sapply()
+* mapply()
+
+Each of these functions takes lists or vectors of values and applies(!) a function to them. Conceptually, it's in the same neighborhood as writing a loop, so long as the steps you want to execute on each pass are a function.
+
+You may have been told that the apply() family is faster than looping in R. That was the case and still is in certain situations, but with more recent versions of R, the behind the scenes optimization of loops means that for modest data sets and similar numbers of function calls a loop isn't meaningfully slower. The exception is that lapply() and sapply() still edge out loops because they actually execute the bulk of their work in C, not R. If you're writing packages or modular code to share, it is still worthwhile to use apply() or mapply() though because they can be clearer and cleaner to read than a loop.
+
+The most generally useful ones for everyday R work, the ones that are closest to for() loops, are lapply() and sapply(). lapply() acts on a vector or list of values and returns a **l**ist. sapply() does the same thing but returns the results as a vector, which I guess someone decided was **s**imple. mapply() acts on **m**ultiple input vectors/lists in tandem, so if you feed it two vectors, it iterates on the first value from both vectors, then the next pass is the second value from each vector, then the third, *etc.*. apply() is actually the most specialized of these and will apply a function to the values in an array, either iterating column by column, or row by row.
+
+There's no agreed-upon way to pronounce these, but you'll often hear either the prefix letter split off, *e.g.* "el apply", or as a single unit, *e.g.* "lapply".
+
+### lapply() and sapply()
+These two are the bread and butter of the family and they're the go-to functions. So, how do they stack up against a loop?
+
+```{r, warning=FALSE}
+## We'll need a vector of values to work with
+vector <- c("pristine", "wild", "intact", "unsullied")
+
+## And here's a list to work on too
+list <- list(c(1, 2, 3), c(4, 5, 6), c(7, 8, 9), c(10, 11, 12))
+
+## If we wanted to find the squares with a for() loop
+# We start with an empty vector to store the values
+uppercase <- c()
+# Then we loop over the vector, binding the square of the current value for each iteration
+for (value in vector) {
+  value.upper <- toupper(value)
+  uppercase <- c(uppercase, value.upper)
+}
+uppercase
+
+## To do the same thing with sapply() (because sapply() returns a vector)
+uppercase <- sapply(vector, toupper)
+uppercase
+
+## Means are also a simple case
+means <- c()
+for (values in list) {
+  mean <- mean(values)
+  means <- c(means, mean)
+}
+means
+
+means <- sapply(list, mean)
+means
+
+```
+
+Note that if you're using an existing function, either from a package or that you've created in your environment, you don't need to add the () after its name. Also, there are no side effects from sapply() changing or creating objects in your environment like the loops do.
+
+So what if you want or need to specify other arguments?
+
+```{r}
+## Using a loop to make strings where the numbers are separated by "-"
+strings <- c()
+for (values in list) {
+  current.string <- paste(values, collapse = "-")
+  strings <- c(strings, current.string)
+}
+strings
+
+## Using a sapply() for the same thing
+# Any arguments other than the values from the list need to be given by name as arguments to sapply()
+strings <- sapply(list, paste, collapse = "-")
+strings
+```
+
+This is all well and good if you're going to use single functions that already exist, but it's rare that you'd want to write a loop with a single step inside it.
+
+```{r}
+## For each vector of numbers in the list, we'll find the mean + max/min
+results <- c()
+for (values in list) {
+  mean <- mean(values)
+  ratio <- max(values)/min(values)
+  result <- mean + ratio
+  results <- c(results, result)
+}
+results
+
+## Instead of just giving a function name for the argument FUN like above, we'll write our own
+results <- sapply(X = list,
+                  suffix = ";",
+                  FUN = function(X, suffix){
+                    mean <- mean(X)
+                    ratio <- max(X)/min(X)
+                    result <- mean + ratio
+                    result <- paste(result, suffix)
+                    return(result)
+                  })
+results
+```
+
+If you look at the examples, they're very similar code, even if the wrappers are different. One of the best ways to become comfortable with using lapply() or sapply() is to start by writing the loop version. Converting a loop to a function inside of a sapply() call is relatively straightforward:
+
+1) Identify what you're looping over, whether that's object/variable names, values in a vector, or something else. That's what you'll provide as the X argument
+2) Put the entirety of the loop inside the curly braces of sapply(X = vector, FUN = function(X) {})
+3) Identify what other objects the loop was using from the environment and make those arguments in your new function, *e.g.* if the loop needs a particular data frame, you might add that as an argument called df so you get function(X, df){*code from your loop*} and replace all the instances of the date frame's name in that copied loop code with "df" so it uses what you've provided as the argument
+4) After you've made sure any objects or values the code needs from the environment are covered as arguments, tell sapply() what to pass as those arguments! For example, if you only had the data frame called important.dataframe to add in, your code might look like: sapply(X = vector, FUN = function(X, df){*code adapted from loop*}, df = important.dataframe)
+
+When would you use lapply() instead of sapply()? Any time the output of each iteration is more complicated than a single value. So, if each iteration will return a complex data structure like a multi-value vector, a list, or a data frame, you'll want to use lapply() so that each of those results can be stored at a distinct index in the output list.
+
+
+### mapply()
+mapply() is powerful, but tricky to use, mostly because it's for special case situations. Any time you want to work through multiple vectors/lists in tandem, mapply() might be a good choice. However, the applications are limited
+
+```{r}
+## We'll use the same task from above, but this time
+## we want to find mean + max/min AND prepend it with the matching string from vector
+results <- c()
+# Each loop will be over an index in the list
+for (index in 1:length(list)) {
+  # Same as above, but we're iterating by index, not the vectors stored at that index
+  mean <- mean(list[[index]])
+  ratio <- max(list[[index]])/min(list[[index]])
+  result <- mean + ratio
+  # Paste the string from the same index in the vector
+  result <- paste(vector[[index]], result)
+  results <- c(results, result)
+}
+results
+
+results <- mapply(list,
+                  vector,
+                  FUN = function(numbers, word){
+                    mean <- mean(numbers)
+                    ratio <- max(numbers)/min(numbers)
+                    result <- mean + ratio
+                    output <- paste(word, result)
+                    # Remember that this is a function and you need to use return() to get objects out of it!
+                    return(output)
+                  })
+results
+```
+
+### apply()
+Despite being the only function in the family without a prefix, apply() is more narrowly specialized than lapply() or sapply(). It acts on an array, most commonly a two-dimensional array like a matrix or a data frame coerced into a matrix, but can take n-dimensional arrays if you're getting into more arcane data structures. The argument MARGIN tells it which dimension (or dimensions) to act on. Usually, in a 2D scenario, you'll either speciy MARGIN = 1 to have each iteration act on a row or MARGIN = 2 to have each iteration act on a column from the array, but if there are higher dimensions, you can call them by name.
+
+For an example, we'll use a table of dog names, breeds, and zip codes in New York City, obtained from [here](http://kaylinwalker.com/dog-names-tfidf/).
+```{r}
+head(dogs.df)
+## For each column, make a table of frequencies of values
+frequencies <- apply(X = dogs.df,
+                     FUN = table,
+                     MARGIN = 2)
+frequencies$gender
+frequencies$dominant_color
+```
+
