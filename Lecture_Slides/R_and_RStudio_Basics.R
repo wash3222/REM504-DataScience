@@ -26,7 +26,7 @@ character object that is not saved.
 ## Filenames and pathways in R
 #############################################################################
 # Load a CSV file
-df <- read.csv("C:\\Users\\Jason Karl\\Downloads\\IBP_RapidEye_Availability.csv",header=T,stringsAsFactors=F)
+df <- read.csv("C:\\Users\\jakal\\OneDrive - University of Idaho\\Documents\\GitHub\\REM504-DataScience\\Practice_Datasets\\tidy_YST_data.csv",header=T,stringsAsFactors=F)
 
 ## A note on filenames when using R in Windows ##
 # Windows uses the backslash (\) to separate directories in pathways and filenames.
@@ -68,6 +68,9 @@ myVar == 1 # returns False
 # I find that it's best in R to avoid using the single equal sign for assignment
 # to help clarify my code and avoid confusion as to what is going on.
 
+# R IS CASE SENSITIVE!!!
+# myVar, myvar, and MYVAR would be 3 different object!
+
 
 #############################################################################
 ## R Workspaces
@@ -78,7 +81,7 @@ myVar == 1 # returns False
 # to your working directory. This can be useful for saving your session if you
 # need to quit R and restart later.
 getwd() # Get the current working directory
-setwd("C:\\Users\\Jason Karl\\Downloads") # Set the working directory to a new location
+setwd("C:\\Users\\jakal\\Downloads") # Set the working directory to a new location
 save(list=ls(),file="all.RData") # Save all objects in the current workspace
 load("all.RData") # Load objects from a saved R workspace
 
@@ -103,12 +106,22 @@ ls(pattern="d") # list all objects starting with letter d
 rm(myVar) # remove a variable
 rm(list=ls()) # remove all the objects in your R workspace. USE WITH CAUTION
 
+# In RStudio, the Environment Window (top-right side of window, usually) lists
+# your objects and can be very useful for managing objects.
+
 
 #############################################################################
 ## Installing Packages
 #############################################################################
+# Packages (or libraries) are add-ons to R that give it extra functionality
+# There are hundreds of packages that you can get for any number of analysis
+# or data processing needs. You can even turn your own functions into packages.
+# R runs an official package repository called CRAN. You can install packages
+# from the CRAN with:
+
 install.packages("dplyr") # Installs a package from the CRAN
 # or can do it via the Tools menu in RStudio
+
 
 #############################################################################
 ## Loading Packages
@@ -118,7 +131,7 @@ install.packages("dplyr") # Installs a package from the CRAN
 # to load properly
 require(dplyr3) # No such package as this. Require will give a warning, but won't abort code
                 # execution.
-test <- filter(data, abs(view_angle)<7) #Script will fail here instead of at package load.
+test <- filter(df, density < 50) #Script will fail here instead of at package load.
                                         #This is problematic because there is another R
                                         #command called "filter" that fits a time series to
                                         #data. You were meaning to run filter from dplyr, but
@@ -129,5 +142,16 @@ test <- filter(data, abs(view_angle)<7) #Script will fail here instead of at pac
 # Load packages with library instead
 library(dplyr) #Script will fail/abort here if a package doesn't exist or fails to load.
                #This is where you want it to fail.
-test <- filter(data, abs(view_angle)<7)
+test <- filter(df, density < 50)
+
+#############################################################################
+## Getting Help
+#############################################################################
+# The most useful help resources for R are the Cheat Sheets, and online help
+# If you need help with a specific function - e.g., to figure out the arguments - 
+# type the name of the function preceded by a question mark (?). For example:
+?runif
+
+# If you get stuck, or get error messages, StackOverflow.com is a great place to
+# look for help.
 
