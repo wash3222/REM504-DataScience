@@ -4,11 +4,11 @@
 [Why are cats better?](https://www.thesprucepets.com/why-cats-are-better-than-dogs-554880)
 [Why are dogs better?](https://www.thesprucepets.com/reasons-dogs-are-better-than-cats-1118371)
 
-1. Dogs
-..*loyalty
-..*like adventure
-..*easier to train
-1. Cats
-..*quieter
-..*clean themselves
-..*cheaper
+## Dogs
+*loyalty
+*like adventure
+*easier to train
+## Cats
+*quieter
+*clean themselves
+*cheaper
