@@ -27,6 +27,8 @@ Git is a VCS that was originally developed by Google, and is not the most common
  - Committing changes
  - Pushing/pulling changes
 
+
+
 ### Markdown!!!
 If you look around GitHub, you'll see that most repositories contain nicely-formatted descriptions and instructions. These are made using a special text file format called Markdown. Markdown files end in .md, and GitHub will recognize any file with that ending and present that file as formatted text. Markdown is great because it's syntax is pretty simple and easy to learn. It's good for creating readme files and how-to documents for your GitHub repos. We'll play with Markdown more throughout class, but for now, here's a link to the Markdown syntax: [Markdown Syntax Guide](https://www.markdownguide.org/basic-syntax).
 
